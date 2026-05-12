@@ -158,7 +158,8 @@ if (db) {
       description_zh TEXT,
       description_vi TEXT,
       description_tl TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      products TEXT
     )
   `).run();
 
@@ -222,6 +223,32 @@ if (db) {
       password TEXT,
       role TEXT DEFAULT 'editor',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+
+  // 创建 team_members 表（如果不存在）
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS team_members (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT UNIQUE,
+      visible INTEGER DEFAULT 1,
+      order_num INTEGER DEFAULT 0,
+      name_en TEXT,
+      name_zh TEXT,
+      name_vi TEXT,
+      name_tl TEXT,
+      role_en TEXT,
+      role_zh TEXT,
+      role_vi TEXT,
+      role_tl TEXT,
+      desc_en TEXT,
+      desc_zh TEXT,
+      desc_vi TEXT,
+      desc_tl TEXT,
+      photo TEXT,
+      email TEXT,
+      color TEXT DEFAULT '#2563eb',
+      initial TEXT
     )
   `).run();
 }
