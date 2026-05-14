@@ -213,37 +213,228 @@
     "video": "/case-uploads/1777977824333-xaqarb.mp4",
     "langData": {
       "en": {
+        "region": "",
+        "category": "",
+        "client": "",
         "title": "General Questions",
-        "seoTitle": "General Questions",
-        "h1Title": "General Questions",
-        "slug": "General Questions",
-        "alt": "General Questions",
-        "content": ""
+        "content": "",
+        "outcomes": "",
+        "materials": ""
       },
       "zh": {
-        "title": "",
-        "seoTitle": "",
-        "h1Title": "",
-        "slug": "",
-        "alt": "",
-        "content": ""
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "一般问题",
+        "content": "",
+        "outcomes": "",
+        "materials": ""
       },
       "vi": {
-        "title": "",
-        "seoTitle": "",
-        "h1Title": "",
-        "slug": "",
-        "alt": "",
-        "content": ""
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "Câu hỏi chung",
+        "content": "",
+        "outcomes": "",
+        "materials": ""
       },
-      "ph": {
-        "title": "",
-        "seoTitle": "",
-        "h1Title": "",
-        "slug": "",
-        "alt": "",
-        "content": ""
+      "tl": {
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "Pangkalahatang Mga Katanungan",
+        "content": "",
+        "outcomes": "",
+        "materials": ""
       }
     }
+  },
+  {
+    "id": 1778763098671,
+    "region": "Vietnam",
+    "category": "Outdoor Billboards (户外围挡)",
+    "title": "title",
+    "client": "jack",
+    "date": "2026-05-14",
+    "images": [],
+    "desc": "",
+    "video": "",
+    "langData": {
+      "en": {
+        "region": "Vietnam",
+        "category": "Outdoor Billboards (户外围挡)",
+        "client": "jack",
+        "title": "title",
+        "desc": "",
+        "content": "context",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "page",
+        "slug": "Slug ",
+        "alt": "Alt "
+      },
+      "zh": {
+        "region": "越南",
+        "category": "户外广告牌（户外围挡）",
+        "client": "杰克",
+        "title": "标题",
+        "desc": "",
+        "content": "背景",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "页面",
+        "slug": "蛞蝓",
+        "alt": "替代"
+      },
+      "vi": {
+        "region": "Việt Nam",
+        "category": "Biển quảng cáo ngoài trời (户外围挡)",
+        "client": "giắc cắm",
+        "title": "Tiêu đề",
+        "desc": "",
+        "content": "Bối cảnh",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "trang",
+        "slug": "Sên",
+        "alt": "Thay thế"
+      },
+      "tl": {
+        "region": "Vietnam",
+        "category": "Mga Panlabas na Billboard (户外围挡)",
+        "client": "Si Jack",
+        "title": "pamagat",
+        "desc": "",
+        "content": "konteksto",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "pahina",
+        "slug": "Slug",
+        "alt": "Alt"
+      }
+    },
+    "slug": "case-1778763422231",
+    "status": "draft"
+  },
+  {
+    "id": 1778763315837,
+    "region": "Vietnam",
+    "category": "Outdoor Billboards (户外围挡)",
+    "title": "title",
+    "client": "jack",
+    "date": "",
+    "images": [],
+    "desc": "",
+    "video": "",
+    "langData": {
+      "en": {
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "title",
+        "content": "context",
+        "outcomes": "",
+        "materials": ""
+      },
+      "zh": {
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "标题",
+        "content": "背景",
+        "outcomes": "",
+        "materials": ""
+      },
+      "vi": {
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "Tiêu đề",
+        "content": "Bối cảnh",
+        "outcomes": "",
+        "materials": ""
+      },
+      "tl": {
+        "region": "",
+        "category": "",
+        "client": "",
+        "title": "pamagat",
+        "content": "konteksto",
+        "outcomes": "",
+        "materials": ""
+      }
+    }
+  },
+  {
+    "id": 1778764124056,
+    "region": "Philippines",
+    "category": "Store Signage (门店招牌)",
+    "title": "title",
+    "client": "jack",
+    "date": "2026-05-14",
+    "images": [],
+    "desc": "",
+    "video": "",
+    "langData": {
+      "en": {
+        "region": "Philippines",
+        "category": "Store Signage (门店招牌)",
+        "client": "jack",
+        "title": "title",
+        "desc": "",
+        "content": "content",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "page",
+        "seoTitle": "seo",
+        "slug": "slug",
+        "alt": "alt"
+      },
+      "zh": {
+        "region": "菲律宾",
+        "category": "门店招牌（门店招牌）",
+        "client": "杰克",
+        "title": "标题",
+        "desc": "",
+        "content": "内容",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "页面",
+        "seoTitle": "SEO",
+        "slug": "蛞蝓",
+        "alt": "替代"
+      },
+      "vi": {
+        "region": "Philippines",
+        "category": "Bảng hiệu cửa hàng (门店招牌)",
+        "client": "giắc cắm",
+        "title": "Tiêu đề",
+        "desc": "",
+        "content": "Nội dung",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "trang",
+        "seoTitle": "SEO",
+        "slug": "Sên",
+        "alt": "Alt"
+      },
+      "tl": {
+        "region": "Pilipinas",
+        "category": "Signage ng Tindahan (门店招牌)",
+        "client": "Si Jack",
+        "title": "pamagat",
+        "desc": "",
+        "content": "Nilalaman",
+        "outcomes": "",
+        "materials": "",
+        "h1Title": "pahina",
+        "seoTitle": "SEO",
+        "slug": "Slug",
+        "alt": "alt"
+      }
+    },
+    "slug": "case-1778764124056",
+    "status": "draft"
   }
 ]

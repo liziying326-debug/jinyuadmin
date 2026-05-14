@@ -46,5 +46,34 @@
         "desc": "Mga de-kalidad na mounting hardware, mga kagamitan sa pag-install at mga accessories para sa mga proyekto ng signage"
       }
     }
+  },
+  {
+    "name_en": "aa",
+    "desc_en": "bb",
+    "id": "aa"
+  },
+  {
+    "name_en": "hi",
+    "desc_en": "pass",
+    "description_en": "pass",
+    "name_zh": "嗨",
+    "name_vi": "Xin chào",
+    "name_tl": "hi",
+    "description_zh": "通行证",
+    "description_vi": "Vượt qua",
+    "description_tl": "Pumasa",
+    "id": "hi"
+  },
+  {
+    "name_en": "kkk",
+    "desc_en": "jjj",
+    "description_en": "jjj",
+    "name_zh": "三K党",
+    "name_vi": "kkk",
+    "name_tl": "kkk",
+    "description_zh": "JJJ",
+    "description_vi": "jjj",
+    "description_tl": "JJJ",
+    "id": "category-1778764722249"
   }
 ]

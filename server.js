@@ -102,14 +102,17 @@ app.get('/api/faqs', (req, res) => {
   }
 });
 
-// POST /api/faqs - 新增FAQ
-app.post('/api/faqs', (req, res) => {
+// POST /api/faqs - 新增FAQ（自动翻译）
+app.post('/api/faqs', async (req, res) => {
   try {
-    const {
-      question_en, question_zh, question_vi, question_tl,
-      answer_en, answer_zh, answer_vi, answer_tl,
-      sort_order, tab, index
-    } = req.body;
+    const cleanBody = { ...req.body };
+    Object.keys(cleanBody).forEach(key => {
+      if (/_zh$|_vi$|_tl$/.test(key)) {
+        delete cleanBody[key];
+      }
+    });
+    
+    const translated = await autoTranslateFAQ(cleanBody, true);
     
     const stmt = db.prepare(`
       INSERT INTO faqs (question_en, question_zh, question_vi, question_tl, 
@@ -119,11 +122,17 @@ app.post('/api/faqs', (req, res) => {
     `);
     
     const info = stmt.run(
-      question_en || '', question_zh || '', question_vi || '', question_tl || '',
-      answer_en || '', answer_zh || '', answer_vi || '', answer_tl || '',
-      sort_order || 0,
-      tab || 'products',
-      index || 0
+      translated.question_en || translated.question || '',
+      translated.question_zh || '',
+      translated.question_vi || '',
+      translated.question_tl || '',
+      translated.answer_en || translated.answer || '',
+      translated.answer_zh || '',
+      translated.answer_vi || '',
+      translated.answer_tl || '',
+      translated.sort_order || 0,
+      translated.tab || 'products',
+      translated.index || 0
     );
     
     res.json({ success: true, id: info.lastInsertRowid });
@@ -132,15 +141,18 @@ app.post('/api/faqs', (req, res) => {
   }
 });
 
-// PUT /api/faqs/:id - 更新FAQ
-app.put('/api/faqs/:id', (req, res) => {
+// PUT /api/faqs/:id - 更新FAQ（自动翻译）
+app.put('/api/faqs/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      question_en, question_zh, question_vi, question_tl,
-      answer_en, answer_zh, answer_vi, answer_tl,
-      sort_order, tab, index
-    } = req.body;
+    const cleanBody = { ...req.body };
+    Object.keys(cleanBody).forEach(key => {
+      if (/_zh$|_vi$|_tl$/.test(key)) {
+        delete cleanBody[key];
+      }
+    });
+    
+    const translated = await autoTranslateFAQ(cleanBody, true);
     
     const stmt = db.prepare(`
       UPDATE faqs 
@@ -151,11 +163,17 @@ app.put('/api/faqs/:id', (req, res) => {
     `);
     
     stmt.run(
-      question_en || '', question_zh || '', question_vi || '', question_tl || '',
-      answer_en || '', answer_zh || '', answer_vi || '', answer_tl || '',
-      sort_order || 0,
-      tab || 'products',
-      index || 0,
+      translated.question_en || translated.question || '',
+      translated.question_zh || '',
+      translated.question_vi || '',
+      translated.question_tl || '',
+      translated.answer_en || translated.answer || '',
+      translated.answer_zh || '',
+      translated.answer_vi || '',
+      translated.answer_tl || '',
+      translated.sort_order || 0,
+      translated.tab || 'products',
+      translated.index || 0,
       id
     );
     
@@ -378,66 +396,73 @@ app.get('/api/products/:id', (req, res) => {
   }
 });
 
-// 创建产品（直接保存，不自动翻译）
-app.post('/api/products', (req, res) => {
+// 创建产品（自动翻译）
+app.post('/api/products', async (req, res) => {
   try {
-    // 优先保存到数据库
-    let useDB = false;
+    const cleanBody = { ...req.body };
+    Object.keys(cleanBody).forEach(key => {
+      if (/_zh$|_vi$|_tl$|_ph$/.test(key) && !Array.isArray(cleanBody[key])) {
+        delete cleanBody[key];
+      }
+    });
+    
+    const translated = await autoTranslateProductFields(cleanBody, true);
+    const newId = Date.now();
+    
+    const newProduct = {
+      ...req.body,
+      ...translated,
+      id: newId,
+      name_en: translated.name_en || translated.Name_en || req.body.name_en || req.body.name || '',
+      description_en: translated.description_en || req.body.description_en || req.body.description || '',
+    };
+    
     try {
-      console.log('[DB] 尝试插入产品到数据库...');
-      console.log('[DB] 接收到的数据：', JSON.stringify(req.body).slice(0, 200));
-      
       const stmt = db.prepare(`
         INSERT INTO products (
           id, name_en, name_zh, name_vi, name_tl,
           category_id, description_en, description_zh, description_vi, description_tl,
-          specs, features_en, images, status
+          specs,
+          features_en, features_zh, features_vi, features_tl,
+          images, status
         ) VALUES (
           @id, @name_en, @name_zh, @name_vi, @name_tl,
           @category_id, @description_en, @description_zh, @description_vi, @description_tl,
-          @specs, @features_en, @images, @status
+          @specs,
+          @features_en, @features_zh, @features_vi, @features_tl,
+          @images, @status
         )
       `);
       
       const params = {
-        id: String(req.body.id || Date.now()),
-        name_en: String(req.body.name || req.body.name_en || ''),
-        name_zh: String(req.body.name_zh || ''),
-        name_vi: String(req.body.name_vi || ''),
-        name_tl: String(req.body.name_tl || ''),
+        id: String(newId),
+        name_en: String(newProduct.name_en || ''),
+        name_zh: String(newProduct.name_zh || ''),
+        name_vi: String(newProduct.name_vi || ''),
+        name_tl: String(newProduct.name_tl || ''),
         category_id: String(req.body.category_id || req.body.category || ''),
-        description_en: String(req.body.description || req.body.description_en || ''),
-        description_zh: String(req.body.description_zh || ''),
-        description_vi: String(req.body.description_vi || ''),
-        description_tl: String(req.body.description_tl || ''),
+        description_en: String(newProduct.description_en || ''),
+        description_zh: String(newProduct.description_zh || ''),
+        description_vi: String(newProduct.description_vi || ''),
+        description_tl: String(newProduct.description_tl || ''),
         specs: JSON.stringify(req.body.specs || []),
-        features_en: JSON.stringify(req.body.features || []),
+        features_en: JSON.stringify(req.body.features_en || req.body.features || []),
+        features_zh: JSON.stringify(newProduct.features_zh || []),
+        features_vi: JSON.stringify(newProduct.features_vi || []),
+        features_tl: JSON.stringify(newProduct.features_tl || []),
         images: JSON.stringify(req.body.images || []),
         status: String(req.body.status || 'active')
       };
       
-      console.log('[DB] 插入参数：', JSON.stringify(params).slice(0, 200));
-      
-      const result = stmt.run(params);
-      console.log('[DB] 插入成功！changes:', result.changes);
-      
-      useDB = true;
+      stmt.run(params);
     } catch (dbErr) {
-      console.error('[DB] 创建产品失败：', dbErr);
-      console.error('[DB] 错误详情：', dbErr.message);
-      console.error('[DB] 错误堆栈：', dbErr.stack);
+      console.error('[DB] 创建产品失败：', dbErr.message);
     }
     
-    // 同时保存到 JSON（兼容旧逻辑 +备份）
     const products = readDataFile('products.json', []);
-    const newProduct = {
-      ...req.body,
-      id: req.body.id || Date.now()
-    };
     products.push(newProduct);
     writeDataFile('products.json', products);
     
-    console.log('[JSON] 产品已保存到 JSON 文件');
     res.json(newProduct);
   } catch (err) {
     console.error('[POST /api/products] error:', err.message);
@@ -445,11 +470,26 @@ app.post('/api/products', (req, res) => {
   }
 });
 
-// 更新产品（优先数据库，fallback到JSON）
-app.put('/api/products/:id', (req, res) => {
+// 更新产品（自动翻译）
+app.put('/api/products/:id', async (req, res) => {
   const productId = String(req.params.id);
   
-  // 优先更新数据库
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (/_zh$|_vi$|_tl$|_ph$/.test(key) && !Array.isArray(cleanBody[key])) {
+      delete cleanBody[key];
+    }
+  });
+  
+  const translated = await autoTranslateProductFields(cleanBody, true);
+  
+  const updatedProduct = {
+    ...req.body,
+    ...translated,
+    name_en: translated.name_en || translated.Name_en || req.body.name_en || req.body.name || '',
+    description_en: translated.description_en || req.body.description_en || req.body.description || '',
+  };
+  
   try {
     const stmt = db.prepare(`
       UPDATE products SET
@@ -464,6 +504,9 @@ app.put('/api/products/:id', (req, res) => {
         description_tl = @description_tl,
         specs = @specs,
         features_en = @features_en,
+        features_zh = @features_zh,
+        features_vi = @features_vi,
+        features_tl = @features_tl,
         images = @images,
         status = @status
       WHERE id = @id
@@ -471,42 +514,43 @@ app.put('/api/products/:id', (req, res) => {
     
     const result = stmt.run({
       id: productId,
-      name_en: String(req.body.name || req.body.name_en || ''),
-      name_zh: String(req.body.name_zh || ''),
-      name_vi: String(req.body.name_vi || ''),
-      name_tl: String(req.body.name_tl || ''),
+      name_en: String(updatedProduct.name_en || ''),
+      name_zh: String(updatedProduct.name_zh || ''),
+      name_vi: String(updatedProduct.name_vi || ''),
+      name_tl: String(updatedProduct.name_tl || ''),
       category_id: String(req.body.category_id || req.body.category || ''),
-      description_en: String(req.body.description || req.body.description_en || ''),
-      description_zh: String(req.body.description_zh || ''),
-      description_vi: String(req.body.description_vi || ''),
-      description_tl: String(req.body.description_tl || ''),
+      description_en: String(updatedProduct.description_en || ''),
+      description_zh: String(updatedProduct.description_zh || ''),
+      description_vi: String(updatedProduct.description_vi || ''),
+      description_tl: String(updatedProduct.description_tl || ''),
       specs: JSON.stringify(req.body.specs || []),
-      features_en: JSON.stringify(req.body.features || []),
+      features_en: JSON.stringify(req.body.features_en || req.body.features || []),
+      features_zh: JSON.stringify(updatedProduct.features_zh || []),
+      features_vi: JSON.stringify(updatedProduct.features_vi || []),
+      features_tl: JSON.stringify(updatedProduct.features_tl || []),
       images: JSON.stringify(req.body.images || []),
       status: String(req.body.status || 'active')
     });
     
     if (result.changes > 0) {
-      // 数据库更新成功，同时更新JSON（保持同步）
       const products = readDataFile('products.json', []);
       const index = products.findIndex(p => String(p.id) === productId);
       if (index !== -1) {
-        products[index] = { ...products[index], ...req.body };
+        products[index] = { ...products[index], ...updatedProduct };
         writeDataFile('products.json', products);
       }
-      return res.json({ success: true, message: 'Product updated in database' });
+      return res.json({ success: true, data: updatedProduct });
     }
   } catch (dbErr) {
-    console.error('[DB] 更新产品失败，fallback 到 JSON：', dbErr.message);
+    console.error('[DB] 更新产品失败：', dbErr.message);
   }
   
-  // 数据库失败或没找到，fallback到JSON
   try {
     const products = readDataFile('products.json', []);
     const index = products.findIndex(p => String(p.id) === productId);
     
     if (index !== -1) {
-      products[index] = { ...products[index], ...req.body };
+      products[index] = { ...products[index], ...updatedProduct };
       writeDataFile('products.json', products);
       res.json(products[index]);
     } else {
@@ -807,40 +851,34 @@ async function translateBatch(texts, from, to) {
 
 // ============ 产品自动翻译辅助函数 ============
 // 当只提供英文字段时，自动翻译生成其他语言版本
-async function autoTranslateProductFields(product) {
+async function autoTranslateProductFields(product, force = false) {
   const targetLangs = ['zh', 'vi', 'tl'];
   const result = { ...product };
 
-  // 翻译 name（如果英文有值但目标语言没有）
-  if (product.name_en) {
+  const nameEn = product.name_en || product.Name_en || '';
+  const descEn = product.description_en || product.description || '';
+
+  if (nameEn) {
     for (const lang of targetLangs) {
-      if (!product[`name_${lang}`] && !product[`name_ph`] && lang !== 'tl') {
+      const langKey = lang === 'tl' ? 'tl' : lang;
+      const hasExisting = !force && product[`name_${langKey}`] && product[`name_${langKey}`].trim();
+      if (!hasExisting) {
         try {
-          const translated = await translateText(product.name_en, 'en', lang);
-          result[`name_${lang}`] = translated;
+          result[`name_${langKey}`] = await translateText(nameEn, 'en', lang);
         } catch (e) {
           console.warn(`[auto-translate] name failed: ${lang}`, e.message);
         }
       }
     }
-    // tl 用 ph 字段
-    if (!product.name_tl && !product.name_ph) {
-      try {
-        result.name_tl = await translateText(product.name_en, 'en', 'tl');
-      } catch (e) {
-        console.warn('[auto-translate] name_tl failed:', e.message);
-      }
-    }
   }
 
-  // 翻译 description
-  if (product.description_en) {
+  if (descEn) {
     for (const lang of targetLangs) {
-      const langKey = lang === 'tl' ? 'ph' : lang;
-      if (!product[`description_${langKey}`]) {
+      const langKey = lang === 'tl' ? 'tl' : lang;
+      const hasExisting = !force && product[`description_${langKey}`] && product[`description_${langKey}`].trim();
+      if (!hasExisting) {
         try {
-          const translated = await translateText(product.description_en, 'en', lang);
-          result[`description_${langKey}`] = translated;
+          result[`description_${langKey}`] = await translateText(descEn, 'en', lang);
         } catch (e) {
           console.warn(`[auto-translate] description failed: ${lang}`, e.message);
         }
@@ -848,62 +886,18 @@ async function autoTranslateProductFields(product) {
     }
   }
 
-  // 翻译 features
-  if (product.features_en && Array.isArray(product.features_en)) {
-    const featuresMap = { zh: 'features_zh', vi: 'features_vi', tl: 'features_ph' };
+  const featuresEn = product.features_en || product.features || [];
+  if (featuresEn && Array.isArray(featuresEn) && featuresEn.length > 0) {
     for (const lang of targetLangs) {
-      const targetKey = featuresMap[lang];
-      if (!product[targetKey] || product[targetKey].length === 0) {
+      const langKey = lang === 'tl' ? 'tl' : lang;
+      const targetKey = `features_${langKey}`;
+      const hasExisting = !force && product[targetKey] && product[targetKey].length > 0;
+      if (!hasExisting) {
         try {
-          const translated = await translateBatch(product.features_en, 'en', lang);
-          result[targetKey] = translated;
+          result[targetKey] = await translateBatch(featuresEn, 'en', lang);
         } catch (e) {
           console.warn(`[auto-translate] features failed: ${lang}`, e.message);
         }
-      }
-    }
-    if (!product.features_tl && !product.features_ph) {
-      try {
-        result.features_tl = await translateBatch(product.features_en, 'en', 'tl');
-      } catch (e) {
-        console.warn('[auto-translate] features_tl failed:', e.message);
-      }
-    }
-  }
-
-  // 翻译 specs
-  if (product.specs && Array.isArray(product.specs)) {
-    const specsMap = { zh: 'specs_zh', vi: 'specs_vi', tl: 'specs_ph' };
-    for (const lang of targetLangs) {
-      const targetKey = specsMap[lang];
-      if (!product[targetKey] || product[targetKey].length === 0) {
-        try {
-          const specNames = product.specs.map(s => s.k_en || '');
-          const specValues = product.specs.map(s => s.v_en || '');
-          const translatedNames = await translateBatch(specNames, 'en', lang);
-          const translatedValues = await translateBatch(specValues, 'en', lang);
-          result[targetKey] = product.specs.map((s, i) => ({
-            k: translatedNames[i] || '',
-            v: translatedValues[i] || ''
-          }));
-        } catch (e) {
-          console.warn(`[auto-translate] specs failed: ${lang}`, e.message);
-        }
-      }
-    }
-    // tl specs
-    if (!product.specs_tl && !product.specs_ph) {
-      try {
-        const specNames = product.specs.map(s => s.k_en || '');
-        const specValues = product.specs.map(s => s.v_en || '');
-        const translatedNames = await translateBatch(specNames, 'en', 'tl');
-        const translatedValues = await translateBatch(specValues, 'en', 'tl');
-        result.specs_tl = product.specs.map((s, i) => ({
-          k: translatedNames[i] || '',
-          v: translatedValues[i] || ''
-        }));
-      } catch (e) {
-        console.warn('[auto-translate] specs_tl failed:', e.message);
       }
     }
   }
@@ -913,9 +907,9 @@ async function autoTranslateProductFields(product) {
 
 // ============ 通用翻译辅助函数 ============
 // 将任何包含 _en 字段的对象自动翻译为 _zh / _vi / _tl
-// 只翻译目标语言为空字符串的字段，避免覆盖已有内容
+// 只翻译目标语言为空字符串的字段，避免覆盖已有内容（除非 force=true）
 // 支持简单字符串字段和复杂数组字段
-async function autoTranslateObject(obj, fieldConfig) {
+async function autoTranslateObject(obj, fieldConfig, force = false) {
   if (!obj || typeof obj !== 'object') return obj;
   const result = { ...obj };
   const targetLangs = ['zh', 'vi', 'tl'];
@@ -926,7 +920,7 @@ async function autoTranslateObject(obj, fieldConfig) {
 
     for (const lang of targetLangs) {
       const targetField = enField.replace('_en', `_${lang}`);
-      if (result[targetField] && result[targetField].trim() !== '') continue;
+      if (!force && result[targetField] && result[targetField].trim() !== '') continue;
 
       try {
         if (fieldType === 'text') {
@@ -948,33 +942,173 @@ async function autoTranslateObject(obj, fieldConfig) {
 
 // ============ 各实体自动翻译函数 ============
 
-async function autoTranslateFAQ(faq) {
-  return autoTranslateObject(faq, {
+async function autoTranslateFAQ(faq, force = false) {
+  const mapped = {
+    ...faq,
+    question_en: faq.question_en || faq.question || '',
+    answer_en: faq.answer_en || faq.answer || '',
+  };
+  return autoTranslateObject(mapped, {
     question_en: 'text',
     answer_en: 'markdown',
-  });
+  }, force);
 }
 
-async function autoTranslateNews(news) {
-  return autoTranslateObject(news, {
-    title_en: 'text',
-    content_en: 'markdown',
-    slug_en: 'text',
-    seo_title_en: 'text',
-    alt_en: 'text',
-  });
+async function autoTranslateNews(news, force = false) {
+  const langData = news.langData || {};
+  const en = langData.en || {};
+  
+  const enFields = {
+    title: en.title || en.title_en || '',
+    content: en.content || en.content_en || '',
+    slug: en.slug || en.slug_en || '',
+    seo_title: en.seoTitle || en.seo_title || en.seo_title_en || '',
+    alt: en.alt || en.alt_en || '',
+  };
+  
+  const targetLangs = ['zh', 'vi', 'tl'];
+  const result = { ...news };
+  result.langData = { en: { ...enFields } };
+  
+  for (const lang of targetLangs) {
+    result.langData[lang] = result.langData[lang] || {};
+    const existingTitle = langData[lang]?.title || langData[lang]?.title_en || '';
+    const existingContent = langData[lang]?.content || langData[lang]?.content_en || '';
+    const existingSlug = langData[lang]?.slug || langData[lang]?.slug_en || '';
+    const existingSeo = langData[lang]?.seoTitle || langData[lang]?.seo_title || langData[lang]?.seo_title_en || '';
+    const existingAlt = langData[lang]?.alt || langData[lang]?.alt_en || '';
+    
+    try {
+      result.langData[lang].title = (!force && existingTitle) ? existingTitle : (enFields.title ? await translateText(enFields.title, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].title = existingTitle;
+    }
+    try {
+      result.langData[lang].content = (!force && existingContent) ? existingContent : (enFields.content ? await translateText(enFields.content, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].content = existingContent;
+    }
+    try {
+      result.langData[lang].slug = (!force && existingSlug) ? existingSlug : (enFields.slug ? await translateText(enFields.slug, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].slug = existingSlug;
+    }
+    try {
+      result.langData[lang].seoTitle = (!force && existingSeo) ? existingSeo : (enFields.seo_title ? await translateText(enFields.seo_title, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].seoTitle = existingSeo;
+    }
+    try {
+      result.langData[lang].alt = (!force && existingAlt) ? existingAlt : (enFields.alt ? await translateText(enFields.alt, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].alt = existingAlt;
+    }
+  }
+  
+  return result;
 }
 
-async function autoTranslateCase(caseItem) {
-  return autoTranslateObject(caseItem, {
-    region_en: 'text',
-    category_en: 'text',
-    client_en: 'text',
-    title_en: 'text',
-    content_en: 'markdown',
-    outcomes_en: 'markdown',
-    materials_en: 'text',
-  });
+async function autoTranslateCase(caseItem, force = false) {
+  const langData = caseItem.langData || {};
+  const en = langData.en || {};
+  
+  const enFields = {
+    region: en.region || en.region_en || caseItem.region || '',
+    category: en.category || en.category_en || caseItem.category || '',
+    client: en.client || en.client_en || caseItem.client || '',
+    title: en.title || en.title_en || caseItem.title || '',
+    desc: en.desc || en.desc_en || caseItem.desc || '',
+    content: en.content || en.content_en || '',
+    outcomes: en.outcomes || en.outcomes_en || '',
+    materials: en.materials || en.materials_en || '',
+    h1Title: en.h1Title || en.h1_title || '',
+    seoTitle: en.seoTitle || en.seo_title || '',
+    slug: en.slug || en.slug_en || '',
+    alt: en.alt || en.alt_en || '',
+  };
+  
+  const targetLangs = ['zh', 'vi', 'tl'];
+  const result = { ...caseItem };
+  result.langData = { en: { ...enFields } };
+  
+  for (const lang of targetLangs) {
+    result.langData[lang] = result.langData[lang] || {};
+    const existingRegion = langData[lang]?.region || langData[lang]?.region_en || '';
+    const existingCategory = langData[lang]?.category || langData[lang]?.category_en || '';
+    const existingClient = langData[lang]?.client || langData[lang]?.client_en || '';
+    const existingTitle = langData[lang]?.title || langData[lang]?.title_en || '';
+    const existingDesc = langData[lang]?.desc || langData[lang]?.desc_en || '';
+    const existingContent = langData[lang]?.content || langData[lang]?.content_en || '';
+    const existingOutcomes = langData[lang]?.outcomes || langData[lang]?.outcomes_en || '';
+    const existingMaterials = langData[lang]?.materials || langData[lang]?.materials_en || '';
+    const existingH1Title = langData[lang]?.h1Title || langData[lang]?.h1_title || '';
+    const existingSeoTitle = langData[lang]?.seoTitle || langData[lang]?.seo_title || '';
+    const existingSlug = langData[lang]?.slug || langData[lang]?.slug_en || '';
+    const existingAlt = langData[lang]?.alt || langData[lang]?.alt_en || '';
+    
+    try {
+      result.langData[lang].region = (!force && existingRegion) ? existingRegion : (enFields.region ? await translateText(enFields.region, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].region = existingRegion;
+    }
+    try {
+      result.langData[lang].category = (!force && existingCategory) ? existingCategory : (enFields.category ? await translateText(enFields.category, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].category = existingCategory;
+    }
+    try {
+      result.langData[lang].client = (!force && existingClient) ? existingClient : (enFields.client ? await translateText(enFields.client, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].client = existingClient;
+    }
+    try {
+      result.langData[lang].title = (!force && existingTitle) ? existingTitle : (enFields.title ? await translateText(enFields.title, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].title = existingTitle;
+    }
+    try {
+      result.langData[lang].desc = (!force && existingDesc) ? existingDesc : (enFields.desc ? await translateText(enFields.desc, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].desc = existingDesc;
+    }
+    try {
+      result.langData[lang].content = (!force && existingContent) ? existingContent : (enFields.content ? await translateText(enFields.content, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].content = existingContent;
+    }
+    try {
+      result.langData[lang].outcomes = (!force && existingOutcomes) ? existingOutcomes : (enFields.outcomes ? await translateText(enFields.outcomes, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].outcomes = existingOutcomes;
+    }
+    try {
+      result.langData[lang].materials = (!force && existingMaterials) ? existingMaterials : (enFields.materials ? await translateText(enFields.materials, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].materials = existingMaterials;
+    }
+    try {
+      result.langData[lang].h1Title = (!force && existingH1Title) ? existingH1Title : (enFields.h1Title ? await translateText(enFields.h1Title, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].h1Title = existingH1Title;
+    }
+    try {
+      result.langData[lang].seoTitle = (!force && existingSeoTitle) ? existingSeoTitle : (enFields.seoTitle ? await translateText(enFields.seoTitle, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].seoTitle = existingSeoTitle;
+    }
+    try {
+      result.langData[lang].slug = (!force && existingSlug) ? existingSlug : (enFields.slug ? await translateText(enFields.slug, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].slug = existingSlug;
+    }
+    try {
+      result.langData[lang].alt = (!force && existingAlt) ? existingAlt : (enFields.alt ? await translateText(enFields.alt, 'en', lang) : '');
+    } catch (e) {
+      result.langData[lang].alt = existingAlt;
+    }
+  }
+  
+  return result;
 }
 
 async function autoTranslateScenario(scenario) {
@@ -995,14 +1129,20 @@ async function autoTranslateScenario(scenario) {
   return translated;
 }
 
-async function autoTranslateCategory(category) {
-  return autoTranslateObject(category, {
+async function autoTranslateCategory(category, force = false) {
+  const mapped = {
+    ...category,
+    name_en: category.name_en || category.name || '',
+    description_en: category.desc_en || category.description_en || category.description || '',
+  };
+  return autoTranslateObject(mapped, {
     name_en: 'text',
     description_en: 'markdown',
-  });
+  }, force);
 }
 
-async function autoTranslateAbout(about) {
+async function autoTranslateAbout(about, force = false) {
+  console.log(`[auto-translate] about = ${JSON.stringify(about)}`);
   const result = { ...about };
   const targetLangs = ['zh', 'vi', 'tl'];
   const stringFields = [
@@ -1013,12 +1153,13 @@ async function autoTranslateAbout(about) {
   for (const field of stringFields) {
     const enField = field.endsWith('_en') ? field : `${field}_en`;
     const enValue = about[enField] || about[field];
+    console.log(`[auto-translate] about.${enField} = ${enValue}`);
     if (!enValue || typeof enValue !== 'string' || enValue.trim() === '') continue;
     const baseField = field.endsWith('_en') ? field.replace('_en', '') : field;
 
     for (const lang of targetLangs) {
       const targetField = `${baseField}_${lang}`;
-      if (result[targetField] && result[targetField].trim() !== '') continue;
+      if (!force && result[targetField] && result[targetField].trim() !== '') continue;
       try {
         result[targetField] = await translateText(enValue, 'en', lang);
       } catch (e) {
@@ -1030,7 +1171,7 @@ async function autoTranslateAbout(about) {
   if (about.milestones && Array.isArray(about.milestones)) {
     for (const lang of targetLangs) {
       const targetField = `milestones_${lang}`;
-      if (result[targetField] && result[targetField].length > 0) continue;
+      if (!force && result[targetField] && result[targetField].length > 0) continue;
       try {
         const translated = [];
         for (const m of about.milestones) {
@@ -1053,7 +1194,7 @@ async function autoTranslateAbout(about) {
   if (about.capacity_cards && Array.isArray(about.capacity_cards)) {
     for (const lang of targetLangs) {
       const targetField = `capacity_cards_${lang}`;
-      if (result[targetField] && result[targetField].length > 0) continue;
+      if (!force && result[targetField] && result[targetField].length > 0) continue;
       try {
         const translated = [];
         for (const c of about.capacity_cards) {
@@ -1073,25 +1214,43 @@ async function autoTranslateAbout(about) {
   }
 
   if (about.team_members && Array.isArray(about.team_members)) {
+    result.team_members = about.team_members.map(m => {
+      const name = m.name_en || m.name || '';
+      const role = m.role_en || m.role || '';
+      const desc = m.desc_en || m.desc || '';
+      return { ...m, name, role, desc };
+    });
+    
     for (const lang of targetLangs) {
-      const targetField = `team_members_${lang}`;
-      if (result[targetField] && result[targetField].length > 0) continue;
+      const nameField = `name_${lang}`;
+      const roleField = `role_${lang}`;
+      const descField = `desc_${lang}`;
+      
+      if (!force) {
+        const hasAll = result.team_members.every(m => 
+          m[nameField] && m[nameField].trim() !== '' &&
+          m[roleField] && m[roleField].trim() !== ''
+        );
+        if (hasAll) continue;
+      }
+      
       try {
-        const translated = [];
-        for (const m of about.team_members) {
-          const name = m.name_en || m.name || '';
-          const role = m.role_en || m.role || '';
-          const desc = m.desc_en || m.desc || '';
-          translated.push({
-            ...m,
-            name: name ? await translateText(name, 'en', lang) : '',
-            role: role ? await translateText(role, 'en', lang) : '',
-            desc: desc ? await translateText(desc, 'en', lang) : '',
-          });
+        for (const m of result.team_members) {
+          const enName = m.name || '';
+          const enRole = m.role || '';
+          const enDesc = m.desc || '';
+          if (!m[nameField] || !m[nameField].trim()) {
+            m[nameField] = enName ? await translateText(enName, 'en', lang) : '';
+          }
+          if (!m[roleField] || !m[roleField].trim()) {
+            m[roleField] = enRole ? await translateText(enRole, 'en', lang) : '';
+          }
+          if (!m[descField] || !m[descField].trim()) {
+            m[descField] = enDesc ? await translateText(enDesc, 'en', lang) : '';
+          }
         }
-        result[targetField] = translated;
       } catch (e) {
-        console.warn(`[auto-translate] team_members_${lang} failed:`, e.message);
+        console.warn(`[auto-translate] team_members ${lang} failed:`, e.message);
       }
     }
   }
@@ -1466,10 +1625,10 @@ app.get('/api/news', (req, res) => {
         images: JSON.parse(row.images || '[]'),
         category: row.category || '',
         langData: {
-          en: { title: row.title_en || '', slug: row.slug_en || '', content: row.content_en || '', seo_title: row.seo_title_en || '', alt: row.alt_en || '' },
-          zh: { title: row.title_zh || '', slug: row.slug_zh || '', content: row.content_zh || '', seo_title: row.seo_title_zh || '', alt: row.alt_zh || '' },
-          vi: { title: row.title_vi || '', slug: row.slug_vi || '', content: row.content_vi || '', seo_title: row.seo_title_vi || '', alt: row.alt_vi || '' },
-          ph: { title: row.title_tl || '', slug: row.slug_tl || '', content: row.content_tl || '', seo_title: row.seo_title_tl || '', alt: row.alt_tl || '' }
+          en: { title: row.title_en || '', slug: row.slug_en || '', content: row.content_en || '', seoTitle: row.seo_title_en || '', alt: row.alt_en || '' },
+          zh: { title: row.title_zh || '', slug: row.slug_zh || '', content: row.content_zh || '', seoTitle: row.seo_title_zh || '', alt: row.alt_zh || '' },
+          vi: { title: row.title_vi || '', slug: row.slug_vi || '', content: row.content_vi || '', seoTitle: row.seo_title_vi || '', alt: row.alt_vi || '' },
+          ph: { title: row.title_tl || '', slug: row.slug_tl || '', content: row.content_tl || '', seoTitle: row.seo_title_tl || '', alt: row.alt_tl || '' }
         }
       }));
       return res.json(news);
@@ -1482,14 +1641,33 @@ app.get('/api/news', (req, res) => {
   res.json(news);
 });
 
-app.post('/api/news', (req, res) => {
+app.post('/api/news', async (req, res) => {
   const now = new Date().toISOString().slice(0, 10);
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (key !== 'langData' && /_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanBody[key];
+    }
+  });
+  if (cleanBody.langData) {
+    ['zh', 'vi', 'tl', 'ph'].forEach(lang => {
+      if (cleanBody.langData[lang]) {
+        Object.keys(cleanBody.langData[lang]).forEach(key => {
+          if (/_zh$|_vi$|_tl$/.test(key)) {
+            delete cleanBody.langData[lang][key];
+          }
+        });
+      }
+    });
+  }
+  
+  const translated = await autoTranslateNews(cleanBody, true);
   const newItem = {
     ...req.body,
+    ...translated,
     id: Date.now()
   };
   
-  // 优先保存到数据库
   try {
     const stmt = db.prepare(`
       INSERT INTO news (
@@ -1509,15 +1687,15 @@ app.post('/api/news', (req, res) => {
       )
     `);
     
-    const langData = req.body.langData || {};
+    const langData = newItem.langData || {};
     stmt.run({
       id: newItem.id,
-      date: req.body.date || now,
-      status: req.body.status || 'draft',
-      views: req.body.views || 0,
-      images: JSON.stringify(req.body.images || []),
-      category: req.body.category || '',
-      title_en: String(langData.en?.title || req.body.title || ''),
+      date: newItem.date || now,
+      status: newItem.status || 'draft',
+      views: newItem.views || 0,
+      images: JSON.stringify(newItem.images || []),
+      category: newItem.category || '',
+      title_en: String(langData.en?.title || ''),
       title_zh: String(langData.zh?.title || ''),
       title_vi: String(langData.vi?.title || ''),
       title_tl: String(langData.ph?.title || langData.tl?.title || ''),
@@ -1529,10 +1707,10 @@ app.post('/api/news', (req, res) => {
       content_zh: String(langData.zh?.content || ''),
       content_vi: String(langData.vi?.content || ''),
       content_tl: String(langData.ph?.content || langData.tl?.content || ''),
-      seo_title_en: String(langData.en?.seo_title || ''),
-      seo_title_zh: String(langData.zh?.seo_title || ''),
-      seo_title_vi: String(langData.vi?.seo_title || ''),
-      seo_title_tl: String(langData.ph?.seo_title || langData.tl?.seo_title || ''),
+      seo_title_en: String(langData.en?.seo_title || langData.en?.seoTitle || ''),
+      seo_title_zh: String(langData.zh?.seo_title || langData.zh?.seoTitle || ''),
+      seo_title_vi: String(langData.vi?.seo_title || langData.vi?.seoTitle || ''),
+      seo_title_tl: String(langData.ph?.seo_title || langData.ph?.seoTitle || langData.tl?.seo_title || langData.tl?.seoTitle || ''),
       alt_en: String(langData.en?.alt || ''),
       alt_zh: String(langData.zh?.alt || ''),
       alt_vi: String(langData.vi?.alt || ''),
@@ -1543,7 +1721,6 @@ app.post('/api/news', (req, res) => {
     console.error('[DB] 创建新闻失败，fallback 到 JSON：', dbErr.message);
   }
   
-  // 同时保存到 JSON（保持同步/备份）
   const news = readDataFile('news.json', []);
   news.push(newItem);
   writeDataFile('news.json', news);
@@ -1551,11 +1728,33 @@ app.post('/api/news', (req, res) => {
   res.json(newItem);
 });
 
-app.put('/api/news/:id', (req, res) => {
+app.put('/api/news/:id', async (req, res) => {
   const newsId = parseInt(req.params.id);
-  const langData = req.body.langData || {};
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (key !== 'langData' && /_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanBody[key];
+    }
+  });
+  if (cleanBody.langData) {
+    ['zh', 'vi', 'tl', 'ph'].forEach(lang => {
+      if (cleanBody.langData[lang]) {
+        Object.keys(cleanBody.langData[lang]).forEach(key => {
+          if (/_zh$|_vi$|_tl$/.test(key)) {
+            delete cleanBody.langData[lang][key];
+          }
+        });
+      }
+    });
+  }
   
-  // 优先更新数据库
+  const translated = await autoTranslateNews(cleanBody, true);
+  const updatedItem = {
+    ...req.body,
+    ...translated,
+  };
+  const langData = updatedItem.langData || {};
+  
   try {
     const stmt = db.prepare(`
       UPDATE news SET
@@ -1589,11 +1788,11 @@ app.put('/api/news/:id', (req, res) => {
     
     const result = stmt.run({
       id: newsId,
-      date: req.body.date || '',
-      status: req.body.status || 'draft',
-      views: req.body.views || 0,
-      images: JSON.stringify(req.body.images || []),
-      category: req.body.category || '',
+      date: updatedItem.date || '',
+      status: updatedItem.status || 'draft',
+      views: updatedItem.views || 0,
+      images: JSON.stringify(updatedItem.images || []),
+      category: updatedItem.category || '',
       title_en: String(langData.en?.title || ''),
       title_zh: String(langData.zh?.title || ''),
       title_vi: String(langData.vi?.title || ''),
@@ -1606,10 +1805,10 @@ app.put('/api/news/:id', (req, res) => {
       content_zh: String(langData.zh?.content || ''),
       content_vi: String(langData.vi?.content || ''),
       content_tl: String(langData.ph?.content || langData.tl?.content || ''),
-      seo_title_en: String(langData.en?.seo_title || ''),
-      seo_title_zh: String(langData.zh?.seo_title || ''),
-      seo_title_vi: String(langData.vi?.seo_title || ''),
-      seo_title_tl: String(langData.ph?.seo_title || langData.tl?.seo_title || ''),
+      seo_title_en: String(langData.en?.seo_title || langData.en?.seoTitle || ''),
+      seo_title_zh: String(langData.zh?.seo_title || langData.zh?.seoTitle || ''),
+      seo_title_vi: String(langData.vi?.seo_title || langData.vi?.seoTitle || ''),
+      seo_title_tl: String(langData.ph?.seo_title || langData.ph?.seoTitle || langData.tl?.seo_title || langData.tl?.seoTitle || ''),
       alt_en: String(langData.en?.alt || ''),
       alt_zh: String(langData.zh?.alt || ''),
       alt_vi: String(langData.vi?.alt || ''),
@@ -1623,11 +1822,10 @@ app.put('/api/news/:id', (req, res) => {
     console.error('[DB] 更新新闻失败：', dbErr.message);
   }
   
-  // 同时更新 JSON（保持同步/备份）
   const news = readDataFile('news.json', []);
   const index = news.findIndex(n => n.id === newsId);
   if (index !== -1) {
-    news[index] = { ...news[index], ...req.body };
+    news[index] = { ...news[index], ...updatedItem };
     writeDataFile('news.json', news);
     res.json(news[index]);
   } else {
@@ -1812,17 +2010,15 @@ app.get('/api/cases', (req, res) => {
         status: row.status || 'draft',
         video: row.video || '',
         images: JSON.parse(row.images || '[]'),
-        // 添加顶层字段，方便列表显示（使用英语作为默认）
         region: row.region_en || '',
         title: row.title_en || '',
         category: row.category_en || '',
         client: row.client_en || '',
-        // 完整多语言数据（用于编辑）
         langData: {
-          en: { region: row.region_en || '', category: row.category_en || '', client: row.client_en || '', title: row.title_en || '', content: row.content_en || '', outcomes: row.outcomes_en || '', materials: row.materials_en || '' },
-          zh: { region: row.region_zh || '', category: row.category_zh || '', client: row.client_zh || '', title: row.title_zh || '', content: row.content_zh || '', outcomes: row.outcomes_zh || '', materials: row.materials_zh || '' },
-          vi: { region: row.region_vi || '', category: row.category_vi || '', client: row.client_vi || '', title: row.title_vi || '', content: row.content_vi || '', outcomes: row.outcomes_vi || '', materials: row.materials_vi || '' },
-          ph: { region: row.region_tl || '', category: row.category_tl || '', client: row.client_tl || '', title: row.title_tl || '', content: row.content_tl || '', outcomes: row.outcomes_tl || '', materials: row.materials_tl || '' }
+          en: { region: row.region_en || '', category: row.category_en || '', client: row.client_en || '', title: row.title_en || '', content: row.content_en || '', outcomes: row.outcomes_en || '', materials: row.materials_en || '', seoTitle: row.seo_title_en || '', h1Title: row.h1_title_en || '', slug: row.slug_en || '', alt: row.alt_en || '' },
+          zh: { region: row.region_zh || '', category: row.category_zh || '', client: row.client_zh || '', title: row.title_zh || '', content: row.content_zh || '', outcomes: row.outcomes_zh || '', materials: row.materials_zh || '', seoTitle: row.seo_title_zh || '', h1Title: row.h1_title_zh || '', slug: row.slug_zh || '', alt: row.alt_zh || '' },
+          vi: { region: row.region_vi || '', category: row.category_vi || '', client: row.client_vi || '', title: row.title_vi || '', content: row.content_vi || '', outcomes: row.outcomes_vi || '', materials: row.materials_vi || '', seoTitle: row.seo_title_vi || '', h1Title: row.h1_title_vi || '', slug: row.slug_vi || '', alt: row.alt_vi || '' },
+          ph: { region: row.region_tl || '', category: row.category_tl || '', client: row.client_tl || '', title: row.title_tl || '', content: row.content_tl || '', outcomes: row.outcomes_tl || '', materials: row.materials_tl || '', seoTitle: row.seo_title_tl || '', h1Title: row.h1_title_tl || '', slug: row.slug_tl || '', alt: row.alt_tl || '' }
         }
       }));
       return res.json({ success: true, data: cases });
@@ -1830,7 +2026,6 @@ app.get('/api/cases', (req, res) => {
   } catch (dbErr) {
     console.error('[DB] 读取案例失败，fallback 到 JSON：', dbErr.message);
   }
-  // 数据库失败或为空，fallback 到 JSON
   const cases = readDataFile('cases.json', []);
   res.json({ success: true, data: cases });
 });
@@ -1850,17 +2045,15 @@ app.get('/api/cases/:id', (req, res) => {
         status: row.status || 'draft',
         video: row.video || '',
         images: JSON.parse(row.images || '[]'),
-        // 添加顶层字段，方便列表显示
         region: row.region_en || '',
         title: row.title_en || '',
         category: row.category_en || '',
         client: row.client_en || '',
-        // 完整多语言数据（用于编辑）
         langData: {
-          en: { region: row.region_en || '', category: row.category_en || '', client: row.client_en || '', title: row.title_en || '', content: row.content_en || '', outcomes: row.outcomes_en || '', materials: row.materials_en || '' },
-          zh: { region: row.region_zh || '', category: row.category_zh || '', client: row.client_zh || '', title: row.title_zh || '', content: row.content_zh || '', outcomes: row.outcomes_zh || '', materials: row.materials_zh || '' },
-          vi: { region: row.region_vi || '', category: row.category_vi || '', client: row.client_vi || '', title: row.title_vi || '', content: row.content_vi || '', outcomes: row.outcomes_vi || '', materials: row.materials_vi || '' },
-          ph: { region: row.region_tl || '', category: row.category_tl || '', client: row.client_tl || '', title: row.title_tl || '', content: row.content_tl || '', outcomes: row.outcomes_tl || '', materials: row.materials_tl || '' }
+          en: { region: row.region_en || '', category: row.category_en || '', client: row.client_en || '', title: row.title_en || '', content: row.content_en || '', outcomes: row.outcomes_en || '', materials: row.materials_en || '', seoTitle: row.seo_title_en || '', h1Title: row.h1_title_en || '', slug: row.slug_en || '', alt: row.alt_en || '' },
+          zh: { region: row.region_zh || '', category: row.category_zh || '', client: row.client_zh || '', title: row.title_zh || '', content: row.content_zh || '', outcomes: row.outcomes_zh || '', materials: row.materials_zh || '', seoTitle: row.seo_title_zh || '', h1Title: row.h1_title_zh || '', slug: row.slug_zh || '', alt: row.alt_zh || '' },
+          vi: { region: row.region_vi || '', category: row.category_vi || '', client: row.client_vi || '', title: row.title_vi || '', content: row.content_vi || '', outcomes: row.outcomes_vi || '', materials: row.materials_vi || '', seoTitle: row.seo_title_vi || '', h1Title: row.h1_title_vi || '', slug: row.slug_vi || '', alt: row.alt_vi || '' },
+          ph: { region: row.region_tl || '', category: row.category_tl || '', client: row.client_tl || '', title: row.title_tl || '', content: row.content_tl || '', outcomes: row.outcomes_tl || '', materials: row.materials_tl || '', seoTitle: row.seo_title_tl || '', h1Title: row.h1_title_tl || '', slug: row.slug_tl || '', alt: row.alt_tl || '' }
         }
       };
       return res.json(caseData);
@@ -1869,7 +2062,6 @@ app.get('/api/cases/:id', (req, res) => {
     console.error('[DB] 读取案例失败，fallback 到 JSON：', dbErr.message);
   }
   
-  // 数据库失败或为空，fallback 到 JSON
   const cases = readDataFile('cases.json', []);
   const caseData = cases.find(c => c.id === caseId || c.id === String(caseId));
   if (!caseData) {
@@ -1878,14 +2070,40 @@ app.get('/api/cases/:id', (req, res) => {
   res.json(caseData);
 });
 
-app.post('/api/cases', (req, res) => {
+app.post('/api/cases', async (req, res) => {
   const now = new Date().toISOString().slice(0, 10);
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (key !== 'langData' && /_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanBody[key];
+    }
+  });
+  if (cleanBody.langData) {
+    ['zh', 'vi', 'tl', 'ph'].forEach(lang => {
+      if (cleanBody.langData[lang]) {
+        Object.keys(cleanBody.langData[lang]).forEach(key => {
+          if (/_zh$|_vi$|_tl$/.test(key)) {
+            delete cleanBody.langData[lang][key];
+          }
+        });
+      }
+    });
+  }
+  
+  const translated = await autoTranslateCase(cleanBody, true);
+  
+  let slug = req.body.slug || translated.slug || '';
+  if (!slug) {
+    slug = 'case-' + Date.now();
+  }
+  
   const newItem = {
     ...req.body,
+    ...translated,
+    slug,
     id: Date.now()
   };
   
-  // 优先保存到数据库
   try {
     const stmt = db.prepare(`
       INSERT INTO cases (
@@ -1896,7 +2114,11 @@ app.post('/api/cases', (req, res) => {
         title_en, title_zh, title_vi, title_tl,
         content_en, content_zh, content_vi, content_tl,
         outcomes_en, outcomes_zh, outcomes_vi, outcomes_tl,
-        materials_en, materials_zh, materials_vi, materials_tl
+        materials_en, materials_zh, materials_vi, materials_tl,
+        slug_en, slug_zh, slug_vi, slug_tl,
+        h1_title_en, h1_title_zh, h1_title_vi, h1_title_tl,
+        seo_title_en, seo_title_zh, seo_title_vi, seo_title_tl,
+        alt_en, alt_zh, alt_vi, alt_tl
       ) VALUES (
         @id, @slug, @date, @status, @video, @images,
         @region_en, @region_zh, @region_vi, @region_tl,
@@ -1905,18 +2127,22 @@ app.post('/api/cases', (req, res) => {
         @title_en, @title_zh, @title_vi, @title_tl,
         @content_en, @content_zh, @content_vi, @content_tl,
         @outcomes_en, @outcomes_zh, @outcomes_vi, @outcomes_tl,
-        @materials_en, @materials_zh, @materials_vi, @materials_tl
+        @materials_en, @materials_zh, @materials_vi, @materials_tl,
+        @slug_en, @slug_zh, @slug_vi, @slug_tl,
+        @h1_title_en, @h1_title_zh, @h1_title_vi, @h1_title_tl,
+        @seo_title_en, @seo_title_zh, @seo_title_vi, @seo_title_tl,
+        @alt_en, @alt_zh, @alt_vi, @alt_tl
       )
     `);
     
-    const langData = req.body.langData || {};
+    const langData = newItem.langData || {};
     stmt.run({
       id: newItem.id,
-      slug: req.body.slug || '',
-      date: req.body.date || now,
-      status: req.body.status || 'draft',
-      video: req.body.video || '',
-      images: JSON.stringify(req.body.images || []),
+      slug: newItem.slug || '',
+      date: newItem.date || now,
+      status: newItem.status || 'draft',
+      video: newItem.video || '',
+      images: JSON.stringify(newItem.images || []),
       region_en: String(langData.en?.region || ''),
       region_zh: String(langData.zh?.region || ''),
       region_vi: String(langData.vi?.region || ''),
@@ -1944,7 +2170,23 @@ app.post('/api/cases', (req, res) => {
       materials_en: String(langData.en?.materials || ''),
       materials_zh: String(langData.zh?.materials || ''),
       materials_vi: String(langData.vi?.materials || ''),
-      materials_tl: String(langData.ph?.materials || langData.tl?.materials || '')
+      materials_tl: String(langData.ph?.materials || langData.tl?.materials || ''),
+      slug_en: String(langData.en?.slug || ''),
+      slug_zh: String(langData.zh?.slug || ''),
+      slug_vi: String(langData.vi?.slug || ''),
+      slug_tl: String(langData.ph?.slug || langData.tl?.slug || ''),
+      h1_title_en: String(langData.en?.h1Title || ''),
+      h1_title_zh: String(langData.zh?.h1Title || ''),
+      h1_title_vi: String(langData.vi?.h1Title || ''),
+      h1_title_tl: String(langData.ph?.h1Title || langData.tl?.h1Title || ''),
+      seo_title_en: String(langData.en?.seoTitle || ''),
+      seo_title_zh: String(langData.zh?.seoTitle || ''),
+      seo_title_vi: String(langData.vi?.seoTitle || ''),
+      seo_title_tl: String(langData.ph?.seoTitle || langData.tl?.seoTitle || ''),
+      alt_en: String(langData.en?.alt || ''),
+      alt_zh: String(langData.zh?.alt || ''),
+      alt_vi: String(langData.vi?.alt || ''),
+      alt_tl: String(langData.ph?.alt || langData.tl?.alt || '')
     });
     
     console.log(`[DB] 创建案例：${newItem.id}`);
@@ -1952,7 +2194,6 @@ app.post('/api/cases', (req, res) => {
     console.error('[DB] 创建案例失败，fallback 到 JSON：', dbErr.message);
   }
   
-  // 同时保存到 JSON（保持同步/备份）
   const cases = readDataFile('cases.json', []);
   cases.push(newItem);
   writeDataFile('cases.json', cases);
@@ -1960,11 +2201,40 @@ app.post('/api/cases', (req, res) => {
   res.json(newItem);
 });
 
-app.put('/api/cases/:id', (req, res) => {
+app.put('/api/cases/:id', async (req, res) => {
   const caseId = parseInt(req.params.id);
-  const langData = req.body.langData || {};
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (key !== 'langData' && /_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanBody[key];
+    }
+  });
+  if (cleanBody.langData) {
+    ['zh', 'vi', 'tl', 'ph'].forEach(lang => {
+      if (cleanBody.langData[lang]) {
+        Object.keys(cleanBody.langData[lang]).forEach(key => {
+          if (/_zh$|_vi$|_tl$/.test(key)) {
+            delete cleanBody.langData[lang][key];
+          }
+        });
+      }
+    });
+  }
   
-  // 优先更新数据库
+  const translated = await autoTranslateCase(cleanBody, true);
+  
+  let slug = req.body.slug || translated.slug || '';
+  if (!slug) {
+    slug = 'case-' + Date.now();
+  }
+  
+  const updatedItem = {
+    ...req.body,
+    ...translated,
+    slug,
+  };
+  const langData = updatedItem.langData || {};
+  
   try {
     const stmt = db.prepare(`
       UPDATE cases SET
@@ -2000,17 +2270,33 @@ app.put('/api/cases/:id', (req, res) => {
         materials_en = @materials_en,
         materials_zh = @materials_zh,
         materials_vi = @materials_vi,
-        materials_tl = @materials_tl
+        materials_tl = @materials_tl,
+        slug_en = @slug_en,
+        slug_zh = @slug_zh,
+        slug_vi = @slug_vi,
+        slug_tl = @slug_tl,
+        h1_title_en = @h1_title_en,
+        h1_title_zh = @h1_title_zh,
+        h1_title_vi = @h1_title_vi,
+        h1_title_tl = @h1_title_tl,
+        seo_title_en = @seo_title_en,
+        seo_title_zh = @seo_title_zh,
+        seo_title_vi = @seo_title_vi,
+        seo_title_tl = @seo_title_tl,
+        alt_en = @alt_en,
+        alt_zh = @alt_zh,
+        alt_vi = @alt_vi,
+        alt_tl = @alt_tl
       WHERE id = @id
     `);
     
     const result = stmt.run({
       id: caseId,
-      slug: req.body.slug || '',
-      date: req.body.date || '',
-      status: req.body.status || 'draft',
-      video: req.body.video || '',
-      images: JSON.stringify(req.body.images || []),
+      slug: updatedItem.slug || '',
+      date: updatedItem.date || '',
+      status: updatedItem.status || 'draft',
+      video: updatedItem.video || '',
+      images: JSON.stringify(updatedItem.images || []),
       region_en: String(langData.en?.region || ''),
       region_zh: String(langData.zh?.region || ''),
       region_vi: String(langData.vi?.region || ''),
@@ -2038,7 +2324,23 @@ app.put('/api/cases/:id', (req, res) => {
       materials_en: String(langData.en?.materials || ''),
       materials_zh: String(langData.zh?.materials || ''),
       materials_vi: String(langData.vi?.materials || ''),
-      materials_tl: String(langData.ph?.materials || langData.tl?.materials || '')
+      materials_tl: String(langData.ph?.materials || langData.tl?.materials || ''),
+      slug_en: String(langData.en?.slug || ''),
+      slug_zh: String(langData.zh?.slug || ''),
+      slug_vi: String(langData.vi?.slug || ''),
+      slug_tl: String(langData.ph?.slug || langData.tl?.slug || ''),
+      h1_title_en: String(langData.en?.h1Title || ''),
+      h1_title_zh: String(langData.zh?.h1Title || ''),
+      h1_title_vi: String(langData.vi?.h1Title || ''),
+      h1_title_tl: String(langData.ph?.h1Title || langData.tl?.h1Title || ''),
+      seo_title_en: String(langData.en?.seoTitle || ''),
+      seo_title_zh: String(langData.zh?.seoTitle || ''),
+      seo_title_vi: String(langData.vi?.seoTitle || ''),
+      seo_title_tl: String(langData.ph?.seoTitle || langData.tl?.seoTitle || ''),
+      alt_en: String(langData.en?.alt || ''),
+      alt_zh: String(langData.zh?.alt || ''),
+      alt_vi: String(langData.vi?.alt || ''),
+      alt_tl: String(langData.ph?.alt || langData.tl?.alt || '')
     });
     
     if (result.changes > 0) {
@@ -2048,11 +2350,10 @@ app.put('/api/cases/:id', (req, res) => {
     console.error('[DB] 更新案例失败：', dbErr.message);
   }
   
-  // 同时更新 JSON（保持同步/备份）
   const cases = readDataFile('cases.json', []);
   const index = cases.findIndex(c => c.id === caseId);
   if (index !== -1) {
-    cases[index] = { ...cases[index], ...req.body };
+    cases[index] = { ...cases[index], ...updatedItem };
     writeDataFile('cases.json', cases);
     res.json(cases[index]);
   } else {
@@ -2166,24 +2467,28 @@ app.get('/api/categories', (req, res) => {
   res.json(categories);
 });
 
-app.post('/api/categories', (req, res) => {
-  // id 优先用前端传来的，否则由 name_en 生成 slug，确保是字符串格式
+app.post('/api/categories', async (req, res) => {
   const rawId = req.body.id;
   let id;
-  if (rawId && typeof rawId === 'string' && rawId.trim()) {
-    id = rawId.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  } else if (req.body.name_en) {
-    id = req.body.name_en.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  } else {
-    id = 'category-' + Date.now();
-  }
+  id = 'category-' + Date.now();
+  
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (/_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanBody[key];
+    }
+  });
+  
+  const translated = await autoTranslateCategory(cleanBody, true);
   
   const newItem = {
     ...req.body,
+    ...translated,
     id,
+    name_en: translated.name_en || translated.name || req.body.name_en || req.body.Name_en || '',
+    desc_en: translated.description_en || translated.desc_en || translated.description || translated.desc || req.body.desc_en || req.body.desc || req.body.description_en || req.body.description || '',
   };
   
-  // 优先保存到数据库
   try {
     const stmt = db.prepare(`
       INSERT INTO categories (id, name_en, name_zh, name_vi, name_tl, description_en, description_zh, description_vi, description_tl)
@@ -2192,14 +2497,14 @@ app.post('/api/categories', (req, res) => {
     
     stmt.run({
       id: String(id),
-      name_en: String(req.body.name_en || ''),
-      name_zh: String(req.body.name_zh || ''),
-      name_vi: String(req.body.name_vi || ''),
-      name_tl: String(req.body.name_tl || ''),
-      description_en: String(req.body.description_en || ''),
-      description_zh: String(req.body.description_zh || ''),
-      description_vi: String(req.body.description_vi || ''),
-      description_tl: String(req.body.description_tl || '')
+      name_en: String(newItem.name_en || ''),
+      name_zh: String(newItem.name_zh || ''),
+      name_vi: String(newItem.name_vi || ''),
+      name_tl: String(newItem.name_tl || ''),
+      description_en: String(newItem.desc_en || newItem.description_en || ''),
+      description_zh: String(newItem.description_zh || ''),
+      description_vi: String(newItem.description_vi || ''),
+      description_tl: String(newItem.description_tl || '')
     });
     
     console.log(`[DB] 创建分类：${id}`);
@@ -2207,7 +2512,6 @@ app.post('/api/categories', (req, res) => {
     console.error('[DB] 创建分类失败，fallback 到 JSON：', dbErr.message);
   }
   
-  // 同时保存到JSON（保持同步）
   try {
     const categories = readDataFile('categories.json', []);
     categories.push(newItem);
@@ -2219,10 +2523,25 @@ app.post('/api/categories', (req, res) => {
   res.json(newItem);
 });
 
-app.put('/api/categories/:id', (req, res) => {
+app.put('/api/categories/:id', async (req, res) => {
   const catId = String(req.params.id);
   
-  // 优先更新数据库
+  const cleanBody = { ...req.body };
+  Object.keys(cleanBody).forEach(key => {
+    if (/_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanBody[key];
+    }
+  });
+  
+  const translated = await autoTranslateCategory(cleanBody, true);
+  
+  const updatedItem = {
+    ...req.body,
+    ...translated,
+    name_en: translated.name_en || translated.name || req.body.name_en || req.body.Name_en || '',
+    desc_en: translated.description_en || translated.desc_en || translated.description || translated.desc || req.body.desc_en || req.body.desc || req.body.description_en || req.body.description || '',
+  };
+  
   try {
     const stmt = db.prepare(`
       UPDATE categories SET
@@ -2239,14 +2558,14 @@ app.put('/api/categories/:id', (req, res) => {
     
     const result = stmt.run({
       id: catId,
-      name_en: String(req.body.name_en || ''),
-      name_zh: String(req.body.name_zh || ''),
-      name_vi: String(req.body.name_vi || ''),
-      name_tl: String(req.body.name_tl || ''),
-      description_en: String(req.body.description_en || ''),
-      description_zh: String(req.body.description_zh || ''),
-      description_vi: String(req.body.description_vi || ''),
-      description_tl: String(req.body.description_tl || '')
+      name_en: String(updatedItem.name_en || ''),
+      name_zh: String(updatedItem.name_zh || ''),
+      name_vi: String(updatedItem.name_vi || ''),
+      name_tl: String(updatedItem.name_tl || ''),
+      description_en: String(updatedItem.desc_en || updatedItem.description_en || ''),
+      description_zh: String(updatedItem.description_zh || ''),
+      description_vi: String(updatedItem.description_vi || ''),
+      description_tl: String(updatedItem.description_tl || '')
     });
     
     if (result.changes > 0) {
@@ -2256,13 +2575,11 @@ app.put('/api/categories/:id', (req, res) => {
     console.error('[DB] 更新分类失败，fallback 到 JSON：', dbErr.message);
   }
   
-  // 同时更新JSON（保持同步）
   try {
     const categories = readDataFile('categories.json', []);
-    // id 可能是数字或字符串，统一用字符串比较
     const index = categories.findIndex(c => String(c.id) === catId);
     if (index !== -1) {
-      categories[index] = { ...categories[index], ...req.body };
+      categories[index] = { ...categories[index], ...updatedItem };
       writeDataFile('categories.json', categories);
       return res.json(categories[index]);
     } else {
@@ -2689,55 +3006,90 @@ app.get('/api/about', (_req, res) => {
   res.json({ success: true, data: about });
 });
 
-app.put('/api/about', (req, res) => {
+// ============ About 新增保存接口（自动翻译） ============
+app.post('/api/about', async (req, res) => {
   const about = req.body;
-
-  // 支持两种格式：
-  // 1. 对象格式：{team_members: [...], intro_title: '...', ...}
-  // 2. 数组格式：[...]（直接是team_members数组，兼容旧版about.json）
   const isArrayFormat = Array.isArray(about);
-  // 优先保存到数据库
+  
+  const cleanAbout = { ...about };
+  Object.keys(cleanAbout).forEach(key => {
+    if (/_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanAbout[key];
+    }
+  });
+  if (cleanAbout.team_members && Array.isArray(cleanAbout.team_members)) {
+    cleanAbout.team_members = cleanAbout.team_members.map(m => {
+      const cleaned = { ...m };
+      Object.keys(cleaned).forEach(key => {
+        if (/_zh$|_vi$|_tl$/.test(key)) {
+          delete cleaned[key];
+        }
+      });
+      return cleaned;
+    });
+  }
+  
+  console.log('[POST /api/about] cleanAbout:', JSON.stringify(cleanAbout).slice(0, 500));
+  
+  const translated = await autoTranslateAbout(cleanAbout, true);
+  console.log('[POST /api/about] translated:', JSON.stringify(translated).slice(0, 500));
+
+  const processedKeys = new Set();
+  
+  const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
+  
+  const insertRow = (key, valueEn, valueZh, valueVi, valueTl) => {
+    stmt.run({
+      section: 'main',
+      key: key,
+      value_en: valueEn,
+      value_zh: valueZh,
+      value_vi: valueVi,
+      value_tl: valueTl
+    });
+  };
+
   try {
-    // 先清空 about 表
     db.prepare('DELETE FROM about').run();
-    // 插入新数据（扁平格式转数据库行）
+    
     const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
     const insert = db.transaction((data) => {
       Object.entries(data).forEach(([key, value]) => {
-        // 跳过 team_members 相关字段（单独存到 team_members 表）
         if (key === 'team_members' || key.startsWith('team_members_')) return;
-        
-        // 修复：非字符串类型先JSON序列化，不要直接跳过
-        let serializedValue = value;
-        if (typeof value !== 'string') {
-          serializedValue = JSON.stringify(value);
-        }
         
         const baseKey = key.replace(/_(zh|vi|tl)$/, '');
         
-        // 如果是基础 key（无后缀），插入为 en
-        if (baseKey === key) {
-          stmt.run({
-            section: 'main',
-            key: key,
-            value_en: serializedValue,
-            value_zh: data[`${key}_zh`] ? (typeof data[`${key}_zh`] === 'string' ? data[`${key}_zh`] : JSON.stringify(data[`${key}_zh`])) : '',
-            value_vi: data[`${key}_vi`] ? (typeof data[`${key}_vi`] === 'string' ? data[`${key}_vi`] : JSON.stringify(data[`${key}_vi`])) : '',
-            value_tl: data[`${key}_tl`] ? (typeof data[`${key}_tl`] === 'string' ? data[`${key}_tl`] : JSON.stringify(data[`${key}_tl`])) : ''
-          });
+        if (baseKey !== key) {
+          if (processedKeys.has(baseKey)) return;
+          processedKeys.add(baseKey);
+          insertRow(
+            baseKey,
+            getValue(data[baseKey]),
+            getValue(data[`${baseKey}_zh`]),
+            getValue(data[`${baseKey}_vi`]),
+            getValue(data[`${baseKey}_tl`])
+          );
+        } else {
+          if (processedKeys.has(key)) return;
+          processedKeys.add(key);
+          insertRow(
+            key,
+            getValue(value),
+            getValue(data[`${key}_zh`]),
+            getValue(data[`${key}_vi`]),
+            getValue(data[`${key}_tl`])
+          );
         }
       });
     });    
     
-    insert(about);
+    insert(translated);
     
-    // 单独处理 team_members，写入新的 team_members 表
     db.prepare('DELETE FROM team_members').run();
     
-    // 根据格式正确获取team_members数组
-    const tmArray = isArrayFormat ? about : (about['team_members'] || []);
+    const tmArray = isArrayFormat ? translated : (translated['team_members'] || []);
     
-              if (Array.isArray(tmArray) && tmArray.length > 0) {
+    if (Array.isArray(tmArray) && tmArray.length > 0) {
       const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
       
       tmArray.forEach((m, i) => {
@@ -2772,13 +3124,139 @@ app.put('/api/about', (req, res) => {
         }
       });
     }
+    
+    console.log('[DB] About 数据（自动翻译）已保存');
   } catch (dbErr) {
     console.error('[DB] 保存 About 数据失败：', dbErr.message);
   }
   
   // 同时保存到 JSON（保持同步/备份）
-  writeDataFile('about.json', about);
-  res.json({ success: true, message: 'About data saved' });
+  writeDataFile('about.json', translated);
+  res.json({ success: true, data: translated });
+});
+
+app.put('/api/about', async (req, res) => {
+  const about = req.body;
+  const isArrayFormat = Array.isArray(about);
+  
+  console.log('[PUT /api/about] received data:', JSON.stringify(about).slice(0, 500));
+  
+  const cleanAbout = { ...about };
+  Object.keys(cleanAbout).forEach(key => {
+    if (/_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanAbout[key];
+    }
+  });
+  if (cleanAbout.team_members && Array.isArray(cleanAbout.team_members)) {
+    cleanAbout.team_members = cleanAbout.team_members.map(m => {
+      const cleaned = { ...m };
+      Object.keys(cleaned).forEach(key => {
+        if (/_zh$|_vi$|_tl$/.test(key)) {
+          delete cleaned[key];
+        }
+      });
+      return cleaned;
+    });
+  }
+  
+  console.log('[PUT /api/about] cleanAbout:', JSON.stringify(cleanAbout).slice(0, 500));
+  
+  const translated = await autoTranslateAbout(cleanAbout, true);
+  console.log('[PUT /api/about] translated:', JSON.stringify(translated).slice(0, 500));
+  const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
+
+  try {
+    db.prepare('DELETE FROM about').run();
+    
+    const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
+    const processedKeys = new Set();
+    
+    const insertRow = (key, valueEn, valueZh, valueVi, valueTl) => {
+      stmt.run({
+        section: 'main',
+        key: key,
+        value_en: valueEn,
+        value_zh: valueZh,
+        value_vi: valueVi,
+        value_tl: valueTl
+      });
+    };
+    
+    Object.entries(translated).forEach(([key, value]) => {
+      if (key === 'team_members' || key.startsWith('team_members_')) return;
+      
+      const baseKey = key.replace(/_(zh|vi|tl)$/, '');
+      
+      if (baseKey !== key) {
+        if (processedKeys.has(baseKey)) return;
+        processedKeys.add(baseKey);
+        insertRow(
+          baseKey,
+          getValue(translated[baseKey]),
+          getValue(translated[`${baseKey}_zh`]),
+          getValue(translated[`${baseKey}_vi`]),
+          getValue(translated[`${baseKey}_tl`])
+        );
+      } else {
+        if (processedKeys.has(key)) return;
+        processedKeys.add(key);
+        insertRow(
+          key,
+          getValue(value),
+          getValue(translated[`${key}_zh`]),
+          getValue(translated[`${key}_vi`]),
+          getValue(translated[`${key}_tl`])
+        );
+      }
+    });
+    
+    db.prepare('DELETE FROM team_members').run();
+    
+    const tmArray = isArrayFormat ? translated : (translated['team_members'] || []);
+    
+    if (Array.isArray(tmArray) && tmArray.length > 0) {
+      const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
+      
+      tmArray.forEach((m, i) => {
+        try {
+          const nameEn = String(m.name_en || m.name || '');
+          const slug = nameEn.toLowerCase().replace(/\s+/g, '-') || 'member-' + (i+1);
+          const initialChar = (m.initial && typeof m.initial === 'string' && m.initial[0]) || nameEn[0] || '?';
+          
+          tmStmt.run({
+            slug: slug,
+            visible: m.visible !== false ? 1 : 0,
+            order_num: i,
+            name_en: nameEn,
+            name_zh: String(m.name_zh || ''),
+            name_vi: String(m.name_vi || ''),
+            name_tl: String(m.name_tl || ''),
+            role_en: String(m.role_en || m.role || ''),
+            role_zh: String(m.role_zh || ''),
+            role_vi: String(m.role_vi || ''),
+            role_tl: String(m.role_tl || ''),
+            desc_en: String(m.desc_en || m.desc || ''),
+            desc_zh: String(m.desc_zh || ''),
+            desc_vi: String(m.desc_vi || ''),
+            desc_tl: String(m.desc_tl || ''),
+            photo: String(m.photo || ''),
+            email: String(m.email || ''),
+            color: String(m.color || '#2563eb'),
+            initial: String(initialChar).toUpperCase()
+          });
+        } catch (insertErr) {
+          console.error('[DB] 插入团队成员失败：', insertErr.message);
+        }
+      });
+    }
+    
+    console.log('[DB] About 数据（自动翻译）已保存');
+  } catch (dbErr) {
+    console.error('[DB] 保存 About 数据失败：', dbErr.message);
+  }
+  
+  writeDataFile('about.json', translated);
+  res.json({ success: true, data: translated });
 });
 
 // About 图片上传

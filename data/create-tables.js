@@ -55,6 +55,22 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS cases (
     id INTEGER PRIMARY KEY,
     slug TEXT UNIQUE,
+    slug_en TEXT,
+    slug_zh TEXT,
+    slug_vi TEXT,
+    slug_tl TEXT,
+    seo_title_en TEXT,
+    seo_title_zh TEXT,
+    seo_title_vi TEXT,
+    seo_title_tl TEXT,
+    alt_en TEXT,
+    alt_zh TEXT,
+    alt_vi TEXT,
+    alt_tl TEXT,
+    h1_title_en TEXT,
+    h1_title_zh TEXT,
+    h1_title_vi TEXT,
+    h1_title_tl TEXT,
     region_en TEXT,
     region_zh TEXT,
     region_vi TEXT,
@@ -192,6 +208,57 @@ db.serialize(() => {
   )`, (err) => {
     if (err) console.error('❌ 创建 accounts 表失败:', err.message);
     else console.log('✅ accounts 表已创建');
+  });
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  //  9. faqs 表（常见问题）
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  db.run(`CREATE TABLE IF NOT EXISTS faqs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table TEXT,
+    question_en TEXT,
+    question_zh TEXT,
+    question_vi TEXT,
+    question_tl TEXT,
+    answer_en TEXT,
+    answer_zh TEXT,
+    answer_vi TEXT,
+    answer_tl TEXT,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`, (err) => {
+    if (err) console.error('❌ 创建 faqs 表失败:', err.message);
+    else console.log('✅ faqs 表已创建');
+  });
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  //  10. faqs 表（常见问题）
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  db.run(`CREATE TABLE products (
+      id TEXT PRIMARY KEY,
+      name_en TEXT,
+      name_zh TEXT,
+      name_vi TEXT,
+      name_tl TEXT,
+      category_id TEXT,
+      description_en TEXT,
+      description_zh TEXT,
+      description_vi TEXT,
+      description_tl TEXT,
+      specs TEXT,
+      features_en TEXT,
+      features_zh TEXT,
+      features_vi TEXT,
+      features_tl TEXT,
+      images TEXT,
+      main_image INTEGER DEFAULT 0,
+      img TEXT,
+      status TEXT DEFAULT 'active',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`, (err) => {
+    if (err) console.error('❌ 创建 products 表失败:', err.message);
+    else console.log('✅ products 表已创建');
   });
 
   console.log('\n📦 数据库表创建完成！\n');

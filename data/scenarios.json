@@ -1,79 +1,30 @@
 [
   {
     "id": 1,
-    "name": "Sign Board",
-    "desc": "From retail shop fronts to large commercial building signs, our materials provide the structural durability and visual quality needed for professional sign making. PVC foam boards offer lightweight rigidity, while aluminum composite panels deliver a premium metal finish.",
+    "name": "English ",
+    "desc": "Content",
     "slug": "sign-board",
     "image": "",
-    "images": [
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80"
-    ],
+    "images": [],
     "langData": {
       "en": {
-        "name": "Sign Board",
-        "desc": "From retail shop fronts to large commercial building signs, our materials provide the structural durability and visual quality needed for professional sign making. PVC foam boards offer lightweight rigidity, while aluminum composite panels deliver a premium metal finish."
+        "name": "English ",
+        "desc": "Content"
       },
       "zh": {
-        "name": "标识牌",
-        "desc": "从零售店面到大型商业建筑标识，我们的材料提供专业标识制作所需的结构耐久性和视觉质量。PVC发泡板重量轻、刚性好，而铝塑板则提供高端金属质感。"
+        "name": "",
+        "desc": ""
       },
       "vi": {
-        "name": "Bảng Biển",
-        "desc": "Từ mặt tiền cửa hàng bán lẻ đến biển hiệu tòa nhà thương mại lớn, vật liệu của chúng tôi cung cấp độ bền cấu trúc và chất lượng hình ảnh cần thiết để làm biển chuyên nghiệp."
+        "name": "",
+        "desc": ""
       },
       "ph": {
-        "name": "Sign Board",
-        "desc": "Mula sa retail shop fronts hanggang sa malalaking commercial building signs, ang aming mga materyales ay nagbibigay ng structural durability at visual quality na kinakailangan para sa professional na paggawa ng sign."
+        "name": "",
+        "desc": ""
       }
     },
-    "materials": [
-      {
-        "id": "self-adhesive-vinyl",
-        "name": "Self Adhesive Vinyl (SAV)",
-        "desc": "High quality Self Adhesive Vinyl (SAV) for advertising and display applications.",
-        "langData": {
-          "en": {
-            "name": "Self Adhesive Vinyl (SAV)",
-            "desc": "High quality Self Adhesive Vinyl (SAV) for advertising and display applications."
-          },
-          "zh": {
-            "name": "",
-            "desc": ""
-          },
-          "vi": {
-            "name": "",
-            "desc": ""
-          },
-          "ph": {
-            "name": "",
-            "desc": ""
-          }
-        }
-      },
-      {
-        "id": "pet-photo-paper",
-        "name": "PET Photo Paper / PP Banner",
-        "desc": "High quality PET Photo Paper / PP Banner for advertising and display applications.",
-        "langData": {
-          "en": {
-            "name": "PET Photo Paper / PP Banner",
-            "desc": "High quality PET Photo Paper / PP Banner for advertising and display applications."
-          },
-          "zh": {
-            "name": "",
-            "desc": ""
-          },
-          "vi": {
-            "name": "",
-            "desc": ""
-          },
-          "ph": {
-            "name": "",
-            "desc": ""
-          }
-        }
-      }
-    ]
+    "materials": []
   },
   {
     "id": 3,
@@ -205,5 +156,59 @@
         }
       }
     ]
+  },
+  {
+    "id": 1778592928246,
+    "name": "1234t12",
+    "desc": "123",
+    "slug": "",
+    "image": "",
+    "images": [],
+    "langData": {
+      "en": {
+        "name": "1234t12",
+        "desc": "123"
+      },
+      "zh": {
+        "name": "",
+        "desc": ""
+      },
+      "vi": {
+        "name": "",
+        "desc": ""
+      },
+      "ph": {
+        "name": "",
+        "desc": ""
+      }
+    },
+    "materials": []
+  },
+  {
+    "id": 1,
+    "name": "44",
+    "desc": "44",
+    "slug": "",
+    "image": "",
+    "images": [],
+    "langData": {
+      "en": {
+        "name": "44",
+        "desc": "44"
+      },
+      "zh": {
+        "name": "",
+        "desc": ""
+      },
+      "vi": {
+        "name": "",
+        "desc": ""
+      },
+      "ph": {
+        "name": "",
+        "desc": ""
+      }
+    },
+    "materials": []
   }
 ]
