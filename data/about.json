@@ -1,45 +1,71 @@
 {
-  "intro_title": "Intro Title",
-  "intro_desc": "Intro Description",
-  "business_desc": "Business Description",
-  "export_desc": "Export Description",
+  "intro_title": "Intro Title2",
+  "intro_desc": "Intro Description3",
+  "business_desc": "Business Description4",
+  "export_desc": "Export Description5",
   "company_image": "/about-uploads/1775904662551-0auwzn.jpg",
-  "mission": "Mission",
-  "vision": "Vision",
-  "values": "Values",
+  "mission": "Mission6",
+  "vision": "Vision7",
+  "values": "Values8",
   "founded": "2009",
-  "location": "Foshan, Guangdong, China",
+  "location": "PanYu, GuangZhou, China",
   "certification": "ISO 9001:2015",
-  "product_lines": "12",
-  "export_markets": "50",
+  "product_lines": "16",
+  "export_markets": "17",
   "contact_email": "vivian@materials-ad.com",
   "timeline_image": "/about-uploads/1775904755237-9xms00.png",
-  "milestones": "[{\"year\":\"2009 · Year 1\",\"title\":\"Company Established\",\"desc\":\"Foshan Jin Yu Advertising Material Co., Ltd officially founded in Nanhai District, Foshan. Initial product range focused on PVC foam board and self adhesive vinyl for domestic market supply.\",\"year_zh\":\"2009 · 第一年\",\"title_zh\":\"公司成立\",\"desc_zh\":\"佛山金宇广告材料有限公司正式成立于佛山南海区。最初的产品线专注于PVC泡沫板和自粘乙烯基，面向国内市场供应。\",\"year_vi\":\"2009 · Năm 1\",\"title_vi\":\"Công ty được thành lập\",\"desc_vi\":\"Công ty TNHH Vật liệu Quảng cáo Phật Sơn Jin Yu chính thức được thành lập tại quận Nam Hải, Phật Sơn. Phạm vi sản phẩm ban đầu tập trung vào tấm xốp PVC và vinyl tự dính để cung cấp cho thị trường trong nước.\",\"year_tl\":\"2009 · Taon 1\",\"title_tl\":\"Itinatag ang Kumpanya\",\"desc_tl\":\"Foshan Jin Yu Advertising Material Co., Ltd opisyal na itinatag sa Nanhai District, Foshan. Paunang hanay ng produkto na nakatuon sa PVC foam board at self adhesive vinyl para sa domestic market supply.\"},{\"year\":\"October 2012\",\"title\":\"First International Clients – Canton Fair\",\"desc\":\"Participated in the Canton Fair for the first time. Successfully established partnerships with overseas buyers from Southeast Asia, the Middle East, and Europe.\",\"year_zh\":\"2012年10月\",\"title_zh\":\"首批国际客户——广州博览会\",\"desc_zh\":\"首次参加广州博览会。成功与东南亚、中东和欧洲的海外买家建立合作关系。\",\"year_vi\":\"Tháng Mười năm 2012\",\"title_vi\":\"Khách hàng quốc tế đầu tiên - Hội chợ Canton\",\"desc_vi\":\"Lần đầu tiên tham gia Hội chợ Canton. Thiết lập thành công quan hệ đối tác với người mua nước ngoài từ Đông Nam Á, Trung Đông và Châu Âu.\",\"year_tl\":\"Oktubre 2012\",\"title_tl\":\"Unang Internasyonal na Kliyente - Canton Fair\",\"desc_tl\":\"Lumahok sa Canton Fair sa kauna-unahang pagkakataon. Matagumpay na itinatag ang pakikipagsosyo sa mga mamimili sa ibang bansa mula sa Timog-silangang Asya, Gitnang Silangan, at Europa.\"},{\"year\":\"March 2013\",\"title\":\"R&D Team Established\",\"desc\":\"Dedicated research and development team formed to drive product innovation, custom formulation development, and technical support capabilities for international clients.\",\"year_zh\":\"2013年3月\",\"title_zh\":\"研发团队成立\",\"desc_zh\":\"成立了专门的研发团队，推动产品创新、定制配方开发及为国际客户提供技术支持能力。\",\"year_vi\":\"Tháng Ba 2013\",\"title_vi\":\"Đội ngũ R & D được thành lập\",\"desc_vi\":\"Đội ngũ nghiên cứu và phát triển tận tâm được thành lập để thúc đẩy đổi mới sản phẩm, phát triển công thức tùy chỉnh và khả năng hỗ trợ kỹ thuật cho khách hàng quốc tế.\",\"year_tl\":\"Marso 2013\",\"title_tl\":\"Itinatag ang R&D Team\",\"desc_tl\":\"Nakatuon na koponan sa pananaliksik at pag-unlad na nabuo upang himukin ang pagbabago ng produkto, pasadyang pag-unlad ng pagbabalangkas, at mga kakayahan sa teknikal na suporta para sa mga internasyonal na kliyente.\"},{\"year\":\"July 2013\",\"title\":\"Production Capacity Expanded\",\"desc\":\"Significant investment in new production lines and advanced equipment. Manufacturing capacity increased substantially to meet growing international order volumes.\",\"year_zh\":\"2013年7月\",\"title_zh\":\"产能扩大\",\"desc_zh\":\"对新生产线和先进设备进行了大量投资。制造产能大幅提升，以满足不断增长的国际订单量。\",\"year_vi\":\"Tháng Bảy 2013\",\"title_vi\":\"Năng lực sản xuất được mở rộng\",\"desc_vi\":\"Đầu tư đáng kể vào dây chuyền sản xuất mới và thiết bị tiên tiến. Năng lực sản xuất tăng đáng kể để đáp ứng khối lượng đơn đặt hàng quốc tế ngày càng tăng.\",\"year_tl\":\"Hulyo 2013\",\"title_tl\":\"Pinalawak ang Kapasidad ng Produksyon\",\"desc_tl\":\"Makabuluhang pamumuhunan sa mga bagong linya ng produksyon at advanced na kagamitan. Ang kapasidad ng pagmamanupaktura ay nadagdagan nang malaki upang matugunan ang lumalaking dami ng order sa internasyonal.\"},{\"year\":\"2024\",\"title\":\"ISO 9001 Certification Achieved\",\"desc\":\"Successfully completed ISO 9001:2015 quality management system certification. Full quality documentation and continuous improvement systems formalized.\",\"year_zh\":\"2024\",\"title_zh\":\"获得ISO 9001认证\",\"desc_zh\":\"成功完成ISO 9001：2015质量管理体系认证。全面质量文档和持续改进系统正式建立。\",\"year_vi\":\"2024\",\"title_vi\":\"Đạt chứng nhận ISO 9001\",\"desc_vi\":\"Hoàn thành thành công chứng nhận hệ thống quản lý chất lượng ISO 9001:2015. Tài liệu chất lượng đầy đủ và hệ thống cải tiến liên tục được chính thức hóa.\",\"year_tl\":\"2024\",\"title_tl\":\"Nakamit ang sertipikasyon ng ISO 9001\",\"desc_tl\":\"Matagumpay na nakumpleto ang sertipikasyon ng sistema ng pamamahala ng kalidad ng ISO 9001: 2015. Pormal na pormal na dokumentasyon ng kalidad at patuloy na mga sistema ng pagpapabuti.\"}]",
+  "milestones": [
+    {
+      "year": "92009 · Year 12",
+      "title": "Company Established",
+      "desc": "Foshan Jin Yu Advertising Material Co., Ltd officially founded in Nanhai District, Foshan. Initial product range focused on PVC foam board and self adhesive vinyl for domestic market supply."
+    },
+    {
+      "year": "10October 2012",
+      "title": "First International Clients – Canton Fair",
+      "desc": "Participated in the Canton Fair for the first time. Successfully established partnerships with overseas buyers from Southeast Asia, the Middle East, and Europe."
+    },
+    {
+      "year": "hi March 2013",
+      "title": "R&D Team Established",
+      "desc": "Dedicated research and development team formed to drive product innovation, custom formulation development, and technical support capabilities for international clients."
+    },
+    {
+      "year": "pass July 2013",
+      "title": "Production Capacity Expanded",
+      "desc": "Significant investment in new production lines and advanced equipment. Manufacturing capacity increased substantially to meet growing international order volumes."
+    },
+    {
+      "year": "2024",
+      "title": "ISO 9001 Certification Achieved",
+      "desc": "Successfully completed ISO 9001:2015 quality management system certification. Full quality documentation and continuous improvement systems formalized."
+    }
+  ],
   "factory_images": [
     {
       "url": "/about-uploads/1775904813370-906jva.jpg",
-      "alt": "Factory Exterior",
+      "alt": "11Factory Exterior",
       "alt_zh": "工厂外观",
       "alt_vi": "Ngoại thất nhà máy",
       "alt_tl": "Panlabas na Pabrika"
     },
     {
       "url": "/about-uploads/1775904827964-56znyf.jpg",
-      "alt": "Production Line",
+      "alt": "12Production Line",
       "alt_zh": "生产线",
       "alt_vi": "Dây chuyền sản xuất",
       "alt_tl": "Linya ng Produksyon"
     },
     {
       "url": "/about-uploads/1775904839941-3px3ni.jpg",
-      "alt": "Equipment",
+      "alt": "13Equipment",
       "alt_zh": "装备",
       "alt_vi": "Trang thiết bị",
       "alt_tl": "Kagamitan"
     },
     {
       "url": "/about-uploads/1775904853926-54earc.jpg",
-      "alt": "Quality Control",
+      "alt": "14Quality Control",
       "alt_zh": "质量控制",
       "alt_vi": "Kiểm soát chất lượng",
       "alt_tl": "Kontrol sa Kalidad"
@@ -47,84 +73,32 @@
   ],
   "capacity_cards": [
     {
-      "title": "Production Equipment",
-      "desc": "Advanced extrusion lines, calendering equipment, coating machines, and slitting systems expanded in 2023",
-      "title_zh": "生产设备",
-      "desc_zh": "先进的挤出线、计量设备、涂层机和分条系统于2023年扩展",
-      "title_vi": "Thiết bị sản xuất",
-      "desc_vi": "Dây chuyền đùn tiên tiến, thiết bị cán, máy sơn và hệ thống rạch được mở rộng vào năm 2023",
-      "title_tl": "Kagamitan sa Produksyon",
-      "desc_tl": "Ang mga advanced na linya ng pagpilit, kagamitan sa kalendaryo, mga makina ng patong, at mga sistema ng pag-slitting ay pinalawak noong 2023"
+      "title": "hi",
+      "desc": "title"
     },
     {
-      "title": "R&D Laboratory",
-      "desc": "In-house testing lab and R&D team for custom formulation, product development, and quality verification",
-      "title_zh": "研发实验室",
-      "desc_zh": "内部测试实验室和研发团队，负责定制配方、产品开发和质量验证",
-      "title_vi": "Phòng thí nghiệm R&D",
-      "desc_vi": "Phòng thí nghiệm thử nghiệm nội bộ và nhóm R & D để xây dựng công thức tùy chỉnh, phát triển sản phẩm và xác minh chất lượng",
-      "title_tl": "Laboratoryo ng R&D",
-      "desc_tl": "In-house testing lab at R&D team para sa pasadyang pagbabalangkas, pag-unlad ng produkto, at pag-verify ng kalidad"
-    },
-    {
-      "title": "Export Warehouse",
-      "desc": "Dedicated export packaging zone with moisture-proof and shock-resistant packing for international shipping",
-      "title_zh": "出口仓库",
-      "desc_zh": "专用出口包装区，采用防潮抗震包装，支持国际运输",
-      "title_vi": "Kho xuất khẩu",
-      "desc_vi": "Khu đóng gói xuất khẩu chuyên dụng với bao bì chống ẩm và chống va đập để vận chuyển quốc tế",
-      "title_tl": "I-export ang Warehouse",
-      "desc_tl": "Nakalaang export packaging zone na may kahalumigmigan-patunay at shock-lumalaban sa pag-iimpake para sa internasyonal na pagpapadala"
-    },
-    {
-      "title": "Quality Control Process",
-      "desc": "Raw material inspection → in-process checks → final testing → packaging verification → pre-shipment inspection",
-      "title_zh": "质量控制流程",
-      "desc_zh": "原材料检查→工序检查→最终测试→包装验证→运输前检查",
-      "title_vi": "Quy trình kiểm soát chất lượng",
-      "desc_vi": "Kiểm tra nguyên liệu thô → kiểm tra trong quá trình → kiểm tra cuối cùng → xác minh bao bì → kiểm tra trước khi giao hàng",
-      "title_tl": "Proseso ng Kontrol sa Kalidad",
-      "desc_tl": "Inspeksyon ng hilaw na materyal → in-process na tseke → pangwakas na pagsubok → pag-verify ng packaging → inspeksyon bago ang pagpapadala"
-    },
-    {
-      "title": "Export Logistics",
-      "desc": "FOB Guangzhou / Foshan. LCL and FCL available. Major freight forwarder partnerships.",
-      "title_zh": "出口物流",
-      "desc_zh": "FOB广州/佛山。提供零载和单载货运。主要货运代理合作。",
-      "title_vi": "Logistics xuất khẩu",
-      "desc_vi": "FOB Quảng Châu / Phật Sơn. LCL và FCL có sẵn. Quan hệ đối tác giao nhận hàng hóa lớn.",
-      "title_tl": "Logistics ng Export",
-      "desc_tl": "FOB Guangzhou / Foshan. Magagamit ang LCL at FCL. Mga pangunahing pakikipagsosyo sa freight forwarder."
-    },
-    {
-      "title": "OEM / Custom Orders",
-      "desc": "Private label packaging, custom specifications, color matching, and dedicated production runs.",
-      "title_zh": "OEM / 定制订单",
-      "desc_zh": "自有品牌包装、定制规格、颜色匹配以及专门生产。",
-      "title_vi": "OEM / Đơn đặt hàng tùy chỉnh",
-      "desc_vi": "Bao bì nhãn hiệu riêng, thông số kỹ thuật tùy chỉnh, kết hợp màu sắc và chạy sản xuất chuyên dụng.",
-      "title_tl": "OEM / Pasadyang Mga Order",
-      "desc_tl": "Pribadong label packaging, pasadyang mga pagtutukoy, pagtutugma ng kulay, at dedikadong pagpapatakbo ng produksyon."
+      "title": "pass",
+      "desc": "oss"
     }
   ],
   "certifications": [],
   "team_members": [
     {
       "visible": true,
-      "name": "Vivian1",
+      "name": "15Vivian1",
       "role": "Export Sales Manager",
       "desc": "International B2B sales, client relations and export documentation. Direct contact for all international enquiries.",
       "photo": "/about-uploads/1776012229059-x889gh.jpg",
       "color": "#2563eb",
       "initial": "V",
       "email": "vivian@materials-ad.com",
-      "name_zh": "薇薇安1",
+      "name_zh": "15薇薇安1",
       "role_zh": "出口销售经理",
-      "desc_zh": "国际B2B销售、客户关系和出口文件。所有国际咨询均可直接联系。",
-      "name_vi": "Vivian1",
+      "desc_zh": "国际B2B销售、客户关系及出口文件。所有国际咨询均可直接联系。",
+      "name_vi": "15Vivian1",
       "role_vi": "Giám đốc kinh doanh xuất khẩu",
       "desc_vi": "Bán hàng B2B quốc tế, quan hệ khách hàng và tài liệu xuất khẩu. Liên hệ trực tiếp cho tất cả các yêu cầu quốc tế.",
-      "name_tl": "Vivian1",
+      "name_tl": "15 Vivian1",
       "role_tl": "Email Address *",
       "desc_tl": "Internasyonal na benta ng B2B, relasyon sa kliyente at dokumentasyon ng pag-export. Direktang pakikipag-ugnay para sa lahat ng mga internasyonal na katanungan."
     },
@@ -177,10 +151,10 @@
       "email": "",
       "name_zh": "雨果",
       "role_zh": "创始人兼总经理",
-      "desc_zh": "凭借数十年广告材料行业经验，他领导公司的整体战略、产品开发和质量管理。他专注于稳定的产品表现和全球市场拓展，致力于为东南亚合作伙伴提供经济且可靠的广告材料解决方案。",
+      "desc_zh": "凭借数十年广告材料行业经验，他领导公司整体战略、产品开发和质量管理。他专注于稳定的产品表现和全球市场拓展，致力于为东南亚合作伙伴提供具成本效益且可靠的广告材料解决方案。",
       "name_vi": "HUGO",
       "role_vi": "Người sáng lập & Tổng giám đốc",
-      "desc_vi": "Với nhiều thập kỷ kinh nghiệm trong ngành tài liệu quảng cáo, ông dẫn dắt chiến lược tổng thể, phát triển sản phẩm và quản lý chất lượng của công ty. Ông tập trung vào hiệu suất sản phẩm ổn định và mở rộng thị trường toàn cầu, chuyên cung cấp các giải pháp tài liệu quảng cáo đáng tin cậy và hiệu quả về chi phí cho các đối tác Đông Nam Á.",
+      "desc_vi": "Với nhiều thập kỷ kinh nghiệm trong ngành tài liệu quảng cáo, ông dẫn dắt chiến lược tổng thể, phát triển sản phẩm và quản lý chất lượng của công ty. Ông tập trung vào hiệu suất sản phẩm ổn định và mở rộng thị trường toàn cầu, chuyên cung cấp các giải pháp vật liệu quảng cáo đáng tin cậy và hiệu quả về chi phí cho các đối tác Đông Nam Á.",
       "name_tl": "HUGO",
       "role_tl": "Tagapagtatag at Pangkalahatang Tagapamahala",
       "desc_tl": "Sa mga dekada ng karanasan sa industriya ng mga materyales sa advertising, pinamumunuan niya ang pangkalahatang diskarte ng kumpanya, pag-unlad ng produkto at pamamahala ng kalidad. Nakatuon siya sa matatag na pagganap ng produkto at pagpapalawak ng pandaigdigang merkado, na nakatuon sa pag-aalok ng cost-effective at maaasahang mga solusyon sa materyal na advertising para sa mga kasosyo sa Timog-silangang Asya."
@@ -196,232 +170,169 @@
       "email": "",
       "name_zh": "杰基",
       "role_zh": "质量控制经理",
-      "desc_zh": "负责生产管理和全流程质量检查。严格管控原材料、生产工艺和成品检测，确保每批商品都符合出口质量标准。",
+      "desc_zh": "负责生产管理和全流程质量检验。严格管控原材料、生产工艺和成品检测，确保每批商品符合出口质量标准。",
       "name_vi": "Jckie",
       "role_vi": "Giám đốc kiểm soát chất lượng",
-      "desc_vi": "Phụ trách quản lý sản xuất và kiểm tra chất lượng toàn bộ. Kiểm soát chặt chẽ nguyên liệu, quy trình sản xuất và kiểm tra thành phẩm để đảm bảo mọi lô hàng đều đạt tiêu chuẩn chất lượng xuất khẩu.",
+      "desc_vi": "Phụ trách quản lý sản xuất và kiểm tra chất lượng toàn bộ. Kiểm soát chặt chẽ nguyên liệu, quy trình sản xuất và kiểm tra thành phẩm để đảm bảo mỗi lô hàng đều đạt tiêu chuẩn chất lượng xuất khẩu.",
       "name_tl": "Jckie",
       "role_tl": "Tagapamahala ng Kontrol sa Kalidad",
-      "desc_tl": "Namamahala sa pamamahala ng produksyon at inspeksyon ng kalidad ng buong proseso. Mahigpit na kinokontrol ang mga hilaw na materyales, proseso ng produksyon at natapos na pagsubok ng produkto upang matiyak na ang bawat batch ng mga kalakal ay nakakatugon sa mga pamantayan sa kalidad ng pag-export."
+      "desc_tl": "Namamahala sa pamamahala ng produksyon at inspeksyon ng kalidad ng buong proseso. Mahigpit na kinokontrol ang mga hilaw na materyales, proseso ng produksyon at pagsubok ng tapos na produkto upang matiyak na ang bawat batch ng mga kalakal ay nakakatugon sa mga pamantayan sa kalidad ng pag-export."
     }
   ],
-  "intro_title_zh": "介绍标题",
-  "intro_title_vi": "Tiêu đề giới thiệu",
-  "intro_title_tl": "Pamagat ng Intro",
-  "intro_desc_zh": "介绍介绍",
-  "intro_desc_vi": "Mô tả giới thiệu",
-  "intro_desc_tl": "Paglalarawan ng Intro",
-  "business_desc_zh": "业务描述",
-  "business_desc_vi": "Mô tả doanh nghiệp",
-  "business_desc_tl": "Paglalarawan ng Negosyo",
-  "export_desc_zh": "出口说明",
-  "export_desc_vi": "Mô tả xuất khẩu",
-  "export_desc_tl": "Paglalarawan ng I-export",
-  "mission_zh": "使命",
-  "mission_vi": "Sứ mệnh",
-  "mission_tl": "Misyon",
-  "vision_zh": "愿景",
-  "vision_vi": "Tầm nhìn",
-  "vision_tl": "Pangitain",
-  "values_zh": "价值观",
-  "values_vi": "Giá trị",
-  "values_tl": "Mga Halaga",
+  "intro_title_zh": "介绍 第二标题",
+  "intro_title_vi": "Tiêu đề giới thiệu2",
+  "intro_title_tl": "Pamagat ng Intro2",
+  "intro_desc_zh": "介绍描述3",
+  "intro_desc_vi": "Mô tả giới thiệu3",
+  "intro_desc_tl": "Paglalarawan ng Panimula3",
+  "business_desc_zh": "业务简介4",
+  "business_desc_vi": "Mô tả doanh nghiệp4",
+  "business_desc_tl": "Paglalarawan ng Negosyo4",
+  "export_desc_zh": "出口说明5",
+  "export_desc_vi": "Mô tả xuất5",
+  "export_desc_tl": "I-export ang Paglalarawan5",
+  "mission_zh": "第六任务",
+  "mission_vi": "Nhiệm vụ6",
+  "mission_tl": "Misyon6",
+  "vision_zh": "愿景7",
+  "vision_vi": "Tầm nhìn7",
+  "vision_tl": "Pangitain7",
+  "values_zh": "价值观8",
+  "values_vi": "Giá trị8",
+  "values_tl": "Mga Pagpapahalaga8",
   "founded_zh": "2009",
   "founded_vi": "2009",
   "founded_tl": "2009",
-  "location_zh": "中国广东佛山",
-  "location_vi": "Phật Sơn, Quảng Đông, Trung Quốc",
-  "location_tl": "Foshan, Guangdong, Tsina",
+  "location_zh": "中国广州盘豫",
+  "location_vi": "PanYu, Quảng Châu, Trung Quốc",
+  "location_tl": "PanYu, GuangZhou, Tsina",
   "certification_zh": "ISO 9001：2015",
   "certification_vi": "Tiêu chuẩn ISO 9001:2015",
   "certification_tl": "ISO 9001: 2015",
   "contact_email_zh": "vivian@materials-ad.com",
   "contact_email_vi": "vivian@materials-ad.com",
   "contact_email_tl": "vivian@materials-ad.com",
+  "milestones_zh": [
+    {
+      "year": "92009 · 12年级",
+      "title": "公司成立",
+      "desc": "佛山金宇广告材料有限公司正式成立于佛山南海区。最初的产品线专注于PVC泡沫板和自粘乙烯基，面向国内市场供应。"
+    },
+    {
+      "year": "2012年10月10日",
+      "title": "首批国际客户——广州博览会",
+      "desc": "首次参加广州博览会。成功与东南亚、中东和欧洲的海外买家建立合作关系。"
+    },
+    {
+      "year": "嗨，2013年3月",
+      "title": "研发团队成立",
+      "desc": "成立了专门的研发团队，推动产品创新、定制配方开发及为国际客户提供技术支持能力。"
+    },
+    {
+      "year": "2013年7月通过",
+      "title": "产能扩大",
+      "desc": "对新生产线和先进设备进行了大量投资。制造产能大幅提升，以满足不断增长的国际订单量。"
+    },
+    {
+      "year": "2024",
+      "title": "获得ISO 9001认证",
+      "desc": "成功完成ISO 9001：2015质量管理体系认证。全面质量文档和持续改进系统正式建立。"
+    }
+  ],
+  "milestones_vi": [
+    {
+      "year": "92009 · Lớp 12",
+      "title": "Công ty được thành lập",
+      "desc": "Công ty TNHH Vật liệu Quảng cáo Phật Sơn Jin Yu chính thức được thành lập tại quận Nam Hải, Phật Sơn. Phạm vi sản phẩm ban đầu tập trung vào tấm xốp PVC và vinyl tự dính để cung cấp cho thị trường trong nước."
+    },
+    {
+      "year": "10Tháng Mười 2012",
+      "title": "Khách hàng quốc tế đầu tiên - Hội chợ Canton",
+      "desc": "Lần đầu tiên tham gia Hội chợ Canton. Thiết lập thành công quan hệ đối tác với người mua nước ngoài từ Đông Nam Á, Trung Đông và Châu Âu."
+    },
+    {
+      "year": "chào tháng 3 năm 2013",
+      "title": "Đội ngũ R & D được thành lập",
+      "desc": "Đội ngũ nghiên cứu và phát triển tận tâm được thành lập để thúc đẩy đổi mới sản phẩm, phát triển công thức tùy chỉnh và khả năng hỗ trợ kỹ thuật cho khách hàng quốc tế."
+    },
+    {
+      "year": "vượt qua Tháng Bảy 2013",
+      "title": "Năng lực sản xuất được mở rộng",
+      "desc": "Đầu tư đáng kể vào dây chuyền sản xuất mới và thiết bị tiên tiến. Năng lực sản xuất tăng đáng kể để đáp ứng khối lượng đơn đặt hàng quốc tế ngày càng tăng."
+    },
+    {
+      "year": "2024",
+      "title": "Đạt chứng nhận ISO 9001",
+      "desc": "Hoàn thành thành công chứng nhận hệ thống quản lý chất lượng ISO 9001:2015. Tài liệu chất lượng đầy đủ và hệ thống cải tiến liên tục được chính thức hóa."
+    }
+  ],
+  "milestones_tl": [
+    {
+      "year": "92009 · Taon 12",
+      "title": "Itinatag ang Kumpanya",
+      "desc": "Foshan Jin Yu Advertising Material Co., Ltd opisyal na itinatag sa Nanhai District, Foshan. Paunang hanay ng produkto na nakatuon sa PVC foam board at self adhesive vinyl para sa domestic market supply."
+    },
+    {
+      "year": "10Oktubre 2012",
+      "title": "Unang Internasyonal na Kliyente - Canton Fair",
+      "desc": "Lumahok sa Canton Fair sa kauna-unahang pagkakataon. Matagumpay na itinatag ang pakikipagsosyo sa mga mamimili sa ibang bansa mula sa Timog-silangang Asya, Gitnang Silangan, at Europa."
+    },
+    {
+      "year": "hi Marso 2013",
+      "title": "Itinatag ang R&D Team",
+      "desc": "Nakatuon na koponan sa pananaliksik at pag-unlad na nabuo upang himukin ang pagbabago ng produkto, pasadyang pag-unlad ng pagbabalangkas, at mga kakayahan sa teknikal na suporta para sa mga internasyonal na kliyente."
+    },
+    {
+      "year": "pumasa Hulyo 2013",
+      "title": "Pinalawak ang Kapasidad ng Produksyon",
+      "desc": "Makabuluhang pamumuhunan sa mga bagong linya ng produksyon at advanced na kagamitan. Ang kapasidad ng pagmamanupaktura ay nadagdagan nang malaki upang matugunan ang lumalaking dami ng order sa internasyonal."
+    },
+    {
+      "year": "2024",
+      "title": "Nakamit ang sertipikasyon ng ISO 9001",
+      "desc": "Matagumpay na nakumpleto ang sertipikasyon ng sistema ng pamamahala ng kalidad ng ISO 9001: 2015. Pormal na pormal na dokumentasyon ng kalidad at patuloy na mga sistema ng pagpapabuti."
+    }
+  ],
   "capacity_cards_zh": [
     {
-      "title": "生产设备",
-      "desc": "先进的挤出线、计量设备、涂层机和分条系统于2023年扩展",
-      "title_zh": "生产设备",
-      "desc_zh": "先进的挤出线、计量设备、涂层机和分条系统于2023年扩展",
-      "title_vi": "Thiết bị sản xuất",
-      "desc_vi": "Dây chuyền đùn tiên tiến, thiết bị cán, máy sơn và hệ thống rạch được mở rộng vào năm 2023",
-      "title_tl": "Kagamitan sa Produksyon",
-      "desc_tl": "Ang mga advanced na linya ng pagpilit, kagamitan sa kalendaryo, mga makina ng patong, at mga sistema ng pag-slitting ay pinalawak noong 2023"
+      "title": "hi",
+      "desc": "title",
+      "title_zh": "嗨",
+      "desc_zh": "标题"
     },
     {
-      "title": "研发实验室",
-      "desc": "内部测试实验室和研发团队，负责定制配方、产品开发和质量验证",
-      "title_zh": "研发实验室",
-      "desc_zh": "内部测试实验室和研发团队，负责定制配方、产品开发和质量验证",
-      "title_vi": "Phòng thí nghiệm R&D",
-      "desc_vi": "Phòng thí nghiệm thử nghiệm nội bộ và nhóm R & D để xây dựng công thức tùy chỉnh, phát triển sản phẩm và xác minh chất lượng",
-      "title_tl": "Laboratoryo ng R&D",
-      "desc_tl": "In-house testing lab at R&D team para sa pasadyang pagbabalangkas, pag-unlad ng produkto, at pag-verify ng kalidad"
-    },
-    {
-      "title": "出口仓库",
-      "desc": "专用出口包装区，采用防潮抗震包装，支持国际运输",
-      "title_zh": "出口仓库",
-      "desc_zh": "专用出口包装区，采用防潮抗震包装，支持国际运输",
-      "title_vi": "Kho xuất khẩu",
-      "desc_vi": "Khu đóng gói xuất khẩu chuyên dụng với bao bì chống ẩm và chống va đập để vận chuyển quốc tế",
-      "title_tl": "I-export ang Warehouse",
-      "desc_tl": "Nakalaang export packaging zone na may kahalumigmigan-patunay at shock-lumalaban sa pag-iimpake para sa internasyonal na pagpapadala"
-    },
-    {
-      "title": "质量控制流程",
-      "desc": "原材料检查→工序检查→最终测试→包装验证→运输前检查",
-      "title_zh": "质量控制流程",
-      "desc_zh": "原材料检查→工序检查→最终测试→包装验证→运输前检查",
-      "title_vi": "Quy trình kiểm soát chất lượng",
-      "desc_vi": "Kiểm tra nguyên liệu thô → kiểm tra trong quá trình → kiểm tra cuối cùng → xác minh bao bì → kiểm tra trước khi giao hàng",
-      "title_tl": "Proseso ng Kontrol sa Kalidad",
-      "desc_tl": "Inspeksyon ng hilaw na materyal → in-process na tseke → pangwakas na pagsubok → pag-verify ng packaging → inspeksyon bago ang pagpapadala"
-    },
-    {
-      "title": "出口物流",
-      "desc": "FOB广州/佛山。提供LCL和FCL服务。主要货运代理合作。",
-      "title_zh": "出口物流",
-      "desc_zh": "FOB广州/佛山。提供零载和单载货运。主要货运代理合作。",
-      "title_vi": "Logistics xuất khẩu",
-      "desc_vi": "FOB Quảng Châu / Phật Sơn. LCL và FCL có sẵn. Quan hệ đối tác giao nhận hàng hóa lớn.",
-      "title_tl": "Logistics ng Export",
-      "desc_tl": "FOB Guangzhou / Foshan. Magagamit ang LCL at FCL. Mga pangunahing pakikipagsosyo sa freight forwarder."
-    },
-    {
-      "title": "OEM / 定制订单",
-      "desc": "自有品牌包装、定制规格、颜色匹配以及专门生产。",
-      "title_zh": "OEM / 定制订单",
-      "desc_zh": "自有品牌包装、定制规格、颜色匹配以及专门生产。",
-      "title_vi": "OEM / Đơn đặt hàng tùy chỉnh",
-      "desc_vi": "Bao bì nhãn hiệu riêng, thông số kỹ thuật tùy chỉnh, kết hợp màu sắc và chạy sản xuất chuyên dụng.",
-      "title_tl": "OEM / Pasadyang Mga Order",
-      "desc_tl": "Pribadong label packaging, pasadyang mga pagtutukoy, pagtutugma ng kulay, at dedikadong pagpapatakbo ng produksyon."
+      "title": "pass",
+      "desc": "oss",
+      "title_zh": "通行证",
+      "desc_zh": "操作系统"
     }
   ],
   "capacity_cards_vi": [
     {
-      "title": "Thiết bị sản xuất",
-      "desc": "Dây chuyền đùn tiên tiến, thiết bị cán, máy sơn và hệ thống rạch được mở rộng vào năm 2023",
-      "title_zh": "生产设备",
-      "desc_zh": "先进的挤出线、计量设备、涂层机和分条系统于2023年扩展",
-      "title_vi": "Thiết bị sản xuất",
-      "desc_vi": "Dây chuyền đùn tiên tiến, thiết bị cán, máy sơn và hệ thống rạch được mở rộng vào năm 2023",
-      "title_tl": "Kagamitan sa Produksyon",
-      "desc_tl": "Ang mga advanced na linya ng pagpilit, kagamitan sa kalendaryo, mga makina ng patong, at mga sistema ng pag-slitting ay pinalawak noong 2023"
+      "title": "hi",
+      "desc": "title",
+      "title_vi": "Xin chào",
+      "desc_vi": "Tiêu đề"
     },
     {
-      "title": "Phòng thí nghiệm R&D",
-      "desc": "Phòng thí nghiệm thử nghiệm nội bộ và nhóm R & D để xây dựng công thức tùy chỉnh, phát triển sản phẩm và xác minh chất lượng",
-      "title_zh": "研发实验室",
-      "desc_zh": "内部测试实验室和研发团队，负责定制配方、产品开发和质量验证",
-      "title_vi": "Phòng thí nghiệm R&D",
-      "desc_vi": "Phòng thí nghiệm thử nghiệm nội bộ và nhóm R & D để xây dựng công thức tùy chỉnh, phát triển sản phẩm và xác minh chất lượng",
-      "title_tl": "Laboratoryo ng R&D",
-      "desc_tl": "In-house testing lab at R&D team para sa pasadyang pagbabalangkas, pag-unlad ng produkto, at pag-verify ng kalidad"
-    },
-    {
-      "title": "Kho xuất khẩu",
-      "desc": "Khu đóng gói xuất khẩu chuyên dụng với bao bì chống ẩm và chống va đập để vận chuyển quốc tế",
-      "title_zh": "出口仓库",
-      "desc_zh": "专用出口包装区，采用防潮抗震包装，支持国际运输",
-      "title_vi": "Kho xuất khẩu",
-      "desc_vi": "Khu đóng gói xuất khẩu chuyên dụng với bao bì chống ẩm và chống va đập để vận chuyển quốc tế",
-      "title_tl": "I-export ang Warehouse",
-      "desc_tl": "Nakalaang export packaging zone na may kahalumigmigan-patunay at shock-lumalaban sa pag-iimpake para sa internasyonal na pagpapadala"
-    },
-    {
-      "title": "Quy trình kiểm soát chất lượng",
-      "desc": "Kiểm tra nguyên liệu thô → kiểm tra trong quá trình → kiểm tra cuối cùng → xác minh bao bì → kiểm tra trước khi giao hàng",
-      "title_zh": "质量控制流程",
-      "desc_zh": "原材料检查→工序检查→最终测试→包装验证→运输前检查",
-      "title_vi": "Quy trình kiểm soát chất lượng",
-      "desc_vi": "Kiểm tra nguyên liệu thô → kiểm tra trong quá trình → kiểm tra cuối cùng → xác minh bao bì → kiểm tra trước khi giao hàng",
-      "title_tl": "Proseso ng Kontrol sa Kalidad",
-      "desc_tl": "Inspeksyon ng hilaw na materyal → in-process na tseke → pangwakas na pagsubok → pag-verify ng packaging → inspeksyon bago ang pagpapadala"
-    },
-    {
-      "title": "Logistics xuất khẩu",
-      "desc": "FOB Quảng Châu / Phật Sơn. LCL và FCL có sẵn. Quan hệ đối tác giao nhận hàng hóa lớn.",
-      "title_zh": "出口物流",
-      "desc_zh": "FOB广州/佛山。提供零载和单载货运。主要货运代理合作。",
-      "title_vi": "Logistics xuất khẩu",
-      "desc_vi": "FOB Quảng Châu / Phật Sơn. LCL và FCL có sẵn. Quan hệ đối tác giao nhận hàng hóa lớn.",
-      "title_tl": "Logistics ng Export",
-      "desc_tl": "FOB Guangzhou / Foshan. Magagamit ang LCL at FCL. Mga pangunahing pakikipagsosyo sa freight forwarder."
-    },
-    {
-      "title": "OEM / Đơn đặt hàng tùy chỉnh",
-      "desc": "Bao bì nhãn hiệu riêng, thông số kỹ thuật tùy chỉnh, kết hợp màu sắc và chạy sản xuất chuyên dụng.",
-      "title_zh": "OEM / 定制订单",
-      "desc_zh": "自有品牌包装、定制规格、颜色匹配以及专门生产。",
-      "title_vi": "OEM / Đơn đặt hàng tùy chỉnh",
-      "desc_vi": "Bao bì nhãn hiệu riêng, thông số kỹ thuật tùy chỉnh, kết hợp màu sắc và chạy sản xuất chuyên dụng.",
-      "title_tl": "OEM / Pasadyang Mga Order",
-      "desc_tl": "Pribadong label packaging, pasadyang mga pagtutukoy, pagtutugma ng kulay, at dedikadong pagpapatakbo ng produksyon."
+      "title": "pass",
+      "desc": "oss",
+      "title_vi": "Vượt qua",
+      "desc_vi": "Hệ điều hành"
     }
   ],
   "capacity_cards_tl": [
     {
-      "title": "Kagamitan sa Produksyon",
-      "desc": "Ang mga advanced na linya ng pagpilit, kagamitan sa kalendaryo, mga makina ng patong, at mga sistema ng pag-slitting ay pinalawak noong 2023",
-      "title_zh": "生产设备",
-      "desc_zh": "先进的挤出线、计量设备、涂层机和分条系统于2023年扩展",
-      "title_vi": "Thiết bị sản xuất",
-      "desc_vi": "Dây chuyền đùn tiên tiến, thiết bị cán, máy sơn và hệ thống rạch được mở rộng vào năm 2023",
-      "title_tl": "Kagamitan sa Produksyon",
-      "desc_tl": "Ang mga advanced na linya ng pagpilit, kagamitan sa kalendaryo, mga makina ng patong, at mga sistema ng pag-slitting ay pinalawak noong 2023"
+      "title": "hi",
+      "desc": "title",
+      "title_tl": "hi",
+      "desc_tl": "pamagat"
     },
     {
-      "title": "Laboratoryo ng R&D",
-      "desc": "In-house testing lab at R&D team para sa pasadyang pagbabalangkas, pag-unlad ng produkto, at pag-verify ng kalidad",
-      "title_zh": "研发实验室",
-      "desc_zh": "内部测试实验室和研发团队，负责定制配方、产品开发和质量验证",
-      "title_vi": "Phòng thí nghiệm R&D",
-      "desc_vi": "Phòng thí nghiệm thử nghiệm nội bộ và nhóm R & D để xây dựng công thức tùy chỉnh, phát triển sản phẩm và xác minh chất lượng",
-      "title_tl": "Laboratoryo ng R&D",
-      "desc_tl": "In-house testing lab at R&D team para sa pasadyang pagbabalangkas, pag-unlad ng produkto, at pag-verify ng kalidad"
-    },
-    {
-      "title": "I-export ang Warehouse",
-      "desc": "Nakalaang export packaging zone na may kahalumigmigan-patunay at shock-lumalaban sa pag-iimpake para sa internasyonal na pagpapadala",
-      "title_zh": "出口仓库",
-      "desc_zh": "专用出口包装区，采用防潮抗震包装，支持国际运输",
-      "title_vi": "Kho xuất khẩu",
-      "desc_vi": "Khu đóng gói xuất khẩu chuyên dụng với bao bì chống ẩm và chống va đập để vận chuyển quốc tế",
-      "title_tl": "I-export ang Warehouse",
-      "desc_tl": "Nakalaang export packaging zone na may kahalumigmigan-patunay at shock-lumalaban sa pag-iimpake para sa internasyonal na pagpapadala"
-    },
-    {
-      "title": "Proseso ng Kontrol sa Kalidad",
-      "desc": "Inspeksyon ng hilaw na materyal → in-process na tseke → pangwakas na pagsubok → pag-verify ng packaging → inspeksyon bago ang pagpapadala",
-      "title_zh": "质量控制流程",
-      "desc_zh": "原材料检查→工序检查→最终测试→包装验证→运输前检查",
-      "title_vi": "Quy trình kiểm soát chất lượng",
-      "desc_vi": "Kiểm tra nguyên liệu thô → kiểm tra trong quá trình → kiểm tra cuối cùng → xác minh bao bì → kiểm tra trước khi giao hàng",
-      "title_tl": "Proseso ng Kontrol sa Kalidad",
-      "desc_tl": "Inspeksyon ng hilaw na materyal → in-process na tseke → pangwakas na pagsubok → pag-verify ng packaging → inspeksyon bago ang pagpapadala"
-    },
-    {
-      "title": "Email Address *",
-      "desc": "FOB Guangzhou / Foshan. Magagamit ang LCL at FCL. Mga pangunahing pakikipagsosyo sa freight forwarder.",
-      "title_zh": "出口物流",
-      "desc_zh": "FOB广州/佛山。提供零载和单载货运。主要货运代理合作。",
-      "title_vi": "Logistics xuất khẩu",
-      "desc_vi": "FOB Quảng Châu / Phật Sơn. LCL và FCL có sẵn. Quan hệ đối tác giao nhận hàng hóa lớn.",
-      "title_tl": "Logistics ng Export",
-      "desc_tl": "FOB Guangzhou / Foshan. Magagamit ang LCL at FCL. Mga pangunahing pakikipagsosyo sa freight forwarder."
-    },
-    {
-      "title": "OEM / Pasadyang Mga Order",
-      "desc": "Pribadong label packaging, pasadyang mga pagtutukoy, pagtutugma ng kulay, at dedikadong pagpapatakbo ng produksyon.",
-      "title_zh": "OEM / 定制订单",
-      "desc_zh": "自有品牌包装、定制规格、颜色匹配以及专门生产。",
-      "title_vi": "OEM / Đơn đặt hàng tùy chỉnh",
-      "desc_vi": "Bao bì nhãn hiệu riêng, thông số kỹ thuật tùy chỉnh, kết hợp màu sắc và chạy sản xuất chuyên dụng.",
-      "title_tl": "OEM / Pasadyang Mga Order",
-      "desc_tl": "Pribadong label packaging, pasadyang mga pagtutukoy, pagtutugma ng kulay, at dedikadong pagpapatakbo ng produksyon."
+      "title": "pass",
+      "desc": "oss",
+      "title_tl": "Pumasa",
+      "desc_tl": "OSS"
     }
   ]
 }

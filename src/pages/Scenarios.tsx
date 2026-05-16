@@ -81,12 +81,12 @@ export default function Scenarios() {
     }
   }, [selectedItem]);
 
-  // 加载产品列表（用于推荐材料选择器）
+  // 加载产品列表（用于推荐产品选择器）
   React.useEffect(() => {
     if (showProductPicker && allProducts.length === 0) {
-      fetch('/api/products')
+      fetch('/api/products', { headers: { 'x-from-frontend': '1' } })
         .then(r => r.json())
-        .then(data => { if (Array.isArray(data)) setAllProducts(data); })
+        .then(data => { if (Array.isArray(data.data)) setAllProducts(data.data); else if (Array.isArray(data)) setAllProducts(data); })
         .catch(() => {});
     }
   }, [showProductPicker]);
@@ -159,11 +159,16 @@ export default function Scenarios() {
     } catch (err) { showToast('网络错误，保存失败'); }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteModal) return;
-    setScenarios(prev => prev.filter(s => s.id !== deleteModal.id));
-    setDeleteModal(null);
-    showToast('场景删除成功');
+    try {
+      await fetch(`/api/scenarios/${deleteModal.id}`, { method: 'DELETE' });
+      setScenarios(prev => prev.filter(s => s.id !== deleteModal.id));
+      setDeleteModal(null);
+      showToast('场景删除成功');
+    } catch (error) {
+      showToast('删除失败');
+    }
   };
 
   // ── 编辑/详情视图 ──
@@ -250,14 +255,14 @@ export default function Scenarios() {
               </div>
             </div>
 
-            {/* 推荐材料编辑区域 */}
+            {/* 推荐产品编辑区域 */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <label className="block text-sm font-semibold text-gray-900">推荐材料</label>
+                <label className="block text-sm font-semibold text-gray-900">推荐产品</label>
                 {!isReadOnly && (
                   <button onClick={openProductPicker} className="flex items-center text-sm font-medium text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
                     <Plus className="w-4 h-4 mr-1.5" />
-                    添加材料
+                    添加产品
                   </button>
                 )}
               </div>
@@ -286,8 +291,8 @@ export default function Scenarios() {
               ) : (
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
                   <Package className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">暂未添加推荐材料</p>
-                  <p className="text-xs text-gray-400 mt-1">点击上方"添加材料"从产品列表中选择</p>
+                  <p className="text-sm text-gray-500">暂未添加推荐产品</p>
+                  <p className="text-xs text-gray-400 mt-1">点击上方"添加产品"从产品列表中选择</p>
                 </div>
               )}
             </div>
@@ -300,8 +305,8 @@ export default function Scenarios() {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
               <div className="flex items-center justify-between p-5 border-b border-gray-100">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">选择推荐材料</h3>
-                  <p className="text-sm text-gray-500 mt-0.5">从产品列表中选择关联到此场景的材料</p>
+                  <h3 className="text-lg font-bold text-gray-900">选择推荐产品</h3>
+                  <p className="text-sm text-gray-500 mt-0.5">从已上架产品列表中选择关联到此场景的产品</p>
                 </div>
                 <button onClick={() => setShowProductPicker(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                   <X className="w-5 h-5" />

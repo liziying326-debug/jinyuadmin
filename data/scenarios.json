@@ -1,15 +1,15 @@
 [
   {
-    "id": 1,
-    "name": "English ",
-    "desc": "Content",
-    "slug": "sign-board",
+    "id": 3,
+    "name": "cc",
+    "desc": "dd",
+    "slug": "digital-printing",
     "image": "",
     "images": [],
     "langData": {
       "en": {
-        "name": "English ",
-        "desc": "Content"
+        "name": "cc",
+        "desc": "dd"
       },
       "zh": {
         "name": "",
@@ -24,56 +24,78 @@
         "desc": ""
       }
     },
-    "materials": []
-  },
-  {
-    "id": 3,
-    "slug": "digital-printing",
-    "images": [
-      "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&q=80"
-    ],
-    "langData": {
-      "en": {
-        "name": "Digital Printing",
-        "desc": "Digital printing shops require substrates that deliver vibrant color output, consistent ink adhesion, and durability across solvent, eco-solvent, UV, and latex printing technologies. Our printable media covers every major printing process."
+    "materials": [
+      {
+        "id": "1778923301976",
+        "name": "ddd",
+        "desc": "eee",
+        "langData": {
+          "en": {
+            "name": "ddd",
+            "desc": "eee"
+          },
+          "zh": {
+            "name": "",
+            "desc": ""
+          },
+          "vi": {
+            "name": "",
+            "desc": ""
+          },
+          "ph": {
+            "name": "",
+            "desc": ""
+          }
+        }
       },
-      "zh": {
-        "name": "数码打印",
-        "desc": "数码打印店需要能提供鲜艳色彩输出、持续墨水附着力和耐久性的基材，适用于溶剂型、环保溶剂型、UV和乳胶打印技术。我们的打印介质覆盖所有主流打印工艺。"
-      },
-      "vi": {
-        "name": "In Kỹ Thuật Số",
-        "desc": "Các cửa hàng in kỹ thuật số yêu cầu chất nền mang lại đầu ra màu sắc rực rỡ, độ bám dính mực nhất quán và độ bền trên nhiều công nghệ in solvent, eco-solvent, UV và latex. Chất liệu in của chúng tôi bao phủ mọi quy trình in chính."
-      },
-      "ph": {
-        "name": "Digital Printing",
-        "desc": "Ang mga digital printing shop ay nangangailangan ng substrates na nagbibigay ng vibrant color output, consistent ink adhesion, at durability sa solvent, eco-solvent, UV, at latex printing technologies."
+      {
+        "id": "1778923241312",
+        "name": "test",
+        "desc": "test",
+        "langData": {
+          "en": {
+            "name": "test",
+            "desc": "test"
+          },
+          "zh": {
+            "name": "",
+            "desc": ""
+          },
+          "vi": {
+            "name": "",
+            "desc": ""
+          },
+          "ph": {
+            "name": "",
+            "desc": ""
+          }
+        }
       }
-    },
-    "materials": []
+    ]
   },
   {
     "id": 4,
+    "name": "title",
+    "desc": "context",
     "slug": "outdoor-advertising",
-    "images": [
-      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80"
-    ],
+    "image": "",
+    "images": [],
     "langData": {
       "en": {
-        "name": "Outdoor Advertising",
-        "desc": "Outdoor advertising materials face harsh UV exposure, wind loads, rain, temperature cycles, and physical impacts. Our outdoor-grade products are formulated and tested for sustained performance in demanding exterior environments across global climates."
+        "name": "title",
+        "desc": "context"
       },
       "zh": {
-        "name": "户外广告",
-        "desc": "户外广告材料面临恶劣的紫外线照射、风荷载、雨水、温度循环和物理冲击。我们的户外级产品经过配方设计和测试，可在各种气候条件下在苛刻的室外环境中保持持续性能。"
+        "name": "",
+        "desc": ""
       },
       "vi": {
-        "name": "Quảng Cáo Ngoài Trời",
-        "desc": "Vật liệu quảng cáo ngoài trời phải đối mặt với tia UV khắc nghiệt, tải trọng gió, mưa, chu kỳ nhiệt độ và tác động vật lý. Các sản phẩm cấp ngoài trời của chúng tôi được pha chế và thử nghiệm để đạt hiệu suất bền vững trong các môi trường bên ngoài khắc nghiệt trên toàn cầu."
+        "name": "",
+        "desc": ""
       },
       "ph": {
-        "name": "Outdoor Advertising",
-        "desc": "Ang mga outdoor advertising material ay nakaharap sa mahirap na UV exposure, wind loads, rain, temperature cycles, at physical impacts. Ang aming outdoor-grade products ay formulated at tested para sa sustained performance."
+        "name": "",
+        "desc": ""
       }
     },
     "materials": []
@@ -185,16 +207,43 @@
     "materials": []
   },
   {
-    "id": 1,
-    "name": "44",
-    "desc": "44",
+    "id": 3,
+    "name": "cc",
+    "desc": "dd",
     "slug": "",
     "image": "",
     "images": [],
     "langData": {
       "en": {
-        "name": "44",
-        "desc": "44"
+        "name": "cc",
+        "desc": "dd"
+      },
+      "zh": {
+        "name": "",
+        "desc": ""
+      },
+      "vi": {
+        "name": "",
+        "desc": ""
+      },
+      "ph": {
+        "name": "",
+        "desc": ""
+      }
+    },
+    "materials": []
+  },
+  {
+    "id": 4,
+    "name": "title",
+    "desc": "context",
+    "slug": "",
+    "image": "",
+    "images": [],
+    "langData": {
+      "en": {
+        "name": "title",
+        "desc": "context"
       },
       "zh": {
         "name": "",

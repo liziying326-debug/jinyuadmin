@@ -1177,9 +1177,11 @@ async function autoTranslateAbout(about, force = false) {
         for (const m of about.milestones) {
           const title = m.title_en || m.title || '';
           const desc = m.desc_en || m.desc || '';
+          const year = m.year || m.year_en || '';
+         
           translated.push({
             ...m,
-            year: m.year || '',
+            year: year ? await translateText(year, 'en', lang) : '',
             title: title ? await translateText(title, 'en', lang) : '',
             desc: desc ? await translateText(desc, 'en', lang) : '',
           });
@@ -1200,11 +1202,12 @@ async function autoTranslateAbout(about, force = false) {
         for (const c of about.capacity_cards) {
           const title = c.title_en || c.title || '';
           const desc = c.desc_en || c.desc || '';
-          translated.push({
-            ...c,
-            title: title ? await translateText(title, 'en', lang) : '',
-            desc: desc ? await translateText(desc, 'en', lang) : '',
-          });
+          const titleField = lang === 'zh' ? 'title_zh' : lang === 'vi' ? 'title_vi' : 'title_tl';
+          const descField = lang === 'zh' ? 'desc_zh' : lang === 'vi' ? 'desc_vi' : 'desc_tl';
+          const obj = { ...c };
+          obj[titleField] = title ? await translateText(title, 'en', lang) : '';
+          obj[descField] = desc ? await translateText(desc, 'en', lang) : '';
+          translated.push(obj);
         }
         result[targetField] = translated;
       } catch (e) {
@@ -2440,9 +2443,11 @@ app.post('/api/upload/video', uploadVideo.single('video'), (req, res) => {
 
 // 获取所有分类（优先数据库，fallback到JSON）
 app.get('/api/categories', (req, res) => {
+  console.log(req.query);
   // 优先从数据库读取
   try {
     const rows = db.prepare('SELECT * FROM categories ORDER BY id').all();
+    console.log(rows);
     if (rows && rows.length > 0) {
       // 统计每个分类下的产品数（含下架产品）
       const categories = rows.map(c => {
@@ -2456,6 +2461,7 @@ app.get('/api/categories', (req, res) => {
           productCount: productCount ? productCount.count : 0
         };
       });
+      console.log(categories);
       return res.json(categories);
     }
   } catch (dbErr) {
@@ -2727,42 +2733,39 @@ function normalizeScenario(body) {
 }
 
 app.post('/api/scenarios', async (req, res) => {
-  const now = new Date().toISOString().slice(0, 10);
   const newItem = normalizeScenario(req.body);
-  // 自动翻译其他语言字段
-  const translated = await autoTranslateScenario(newItem);
-  console.log(translated);
-  // 优先保存到数据库
+  const langData = req.body.langData || {};
+  const topName = langData.en?.name || req.body.name_en || req.body.name || '';
+  const topDesc = langData.en?.desc || req.body.description_en || req.body.desc || '';
+  const productsData = JSON.stringify(req.body.products || req.body.materials || []);
+  
   try {
     const stmt = db.prepare(`
       INSERT INTO scenarios (title_en, title_zh, title_vi, title_tl, description_en, description_zh, description_vi, description_tl, image, order_num, is_active, products)
       VALUES (@title_en, @title_zh, @title_vi, @title_tl, @description_en, @description_zh, @description_vi, @description_tl, @image, @order_num, @is_active, @products)
     `);
-    console.log(`[DB] 插入应用场景：${newItem.id}`);
-    const langData = req.body.langData || {};
-    // 兼容 materials 和 products 字段名
-    const productsData = JSON.stringify(req.body.products || req.body.materials || []);
     const result = stmt.run({
-      title_en: String(langData.en?.name || translated.name_en || translated.title_en || ''),
-      title_zh: String(langData.zh?.name || translated.name_zh || translated.title_zh || ''),
-      title_vi: String(langData.vi?.name || translated.name_vi || translated.title_vi || ''),
-      title_tl: String(langData.ph?.name || langData.tl?.name || translated.name_tl || translated.title_tl || ''),
-      description_en: String(langData.en?.desc || translated.description_en || ''),
-      description_zh: String(langData.zh?.desc || translated.description_zh || ''),
-      description_vi: String(langData.vi?.desc || translated.description_vi || ''),
-      description_tl: String(langData.ph?.desc || langData.tl?.desc || translated.description_tl || ''),
-      image: translated.image || (Array.isArray(translated.images) ? translated.images[0] : '') || '',
-      order_num: parseInt(translated.order_num) || 0,
-      is_active: translated.is_active !== false ? 1 : 0,
+      title_en: String(topName || ''),
+      title_zh: String(langData.zh?.name || ''),
+      title_vi: String(langData.vi?.name || ''),
+      title_tl: String(langData.ph?.name || langData.tl?.name || ''),
+      description_en: String(topDesc || ''),
+      description_zh: String(langData.zh?.desc || ''),
+      description_vi: String(langData.vi?.desc || ''),
+      description_tl: String(langData.ph?.desc || langData.tl?.desc || ''),
+      image: String(newItem.image || ''),
+      order_num: parseInt(newItem.order_num) || 0,
+      is_active: newItem.is_active !== false ? 1 : 0,
       products: productsData
     });
     newItem.id = result.lastInsertRowid;
     console.log(`[DB] 创建应用场景：${newItem.id}`);
   } catch (dbErr) {
-    console.error('[DB] 创建应用场景失败，fallback 到 JSON：', dbErr.message);
+    console.error('[DB] 创建应用场景失败：', dbErr.message);
+    res.status(500).json({ error: dbErr.message });
+    return;
   }
   
-  // 同时保存到 JSON（保持同步/备份）
   const scenarios = readDataFile('scenarios.json', []);
   scenarios.push(newItem);
   writeDataFile('scenarios.json', scenarios);
@@ -2774,7 +2777,9 @@ app.put('/api/scenarios/:id', async (req, res) => {
   const scenarioId = parseInt(req.params.id);
   // 先自动翻译所有空字段
   const translated = await autoTranslateScenario(req.body);
-  const langData = translated.langData || {};
+  const origLangData = req.body.langData || {};
+  const topName = origLangData.en?.name || req.body.name_en || req.body.name || '';
+  const topDesc = origLangData.en?.desc || req.body.description_en || req.body.desc || '';
   // 兼容 materials 和 products 字段名
   const productsData = JSON.stringify(translated.products || translated.materials || []);
   
@@ -2799,14 +2804,14 @@ app.put('/api/scenarios/:id', async (req, res) => {
     
     const result = stmt.run({
       id: scenarioId,
-      title_en: String(langData.en?.name || translated.name_en || translated.title_en || ''),
-      title_zh: String(langData.zh?.name || translated.name_zh || translated.title_zh || ''),
-      title_vi: String(langData.vi?.name || translated.name_vi || translated.title_vi || ''),
-      title_tl: String(langData.ph?.name || langData.tl?.name || translated.name_tl || translated.title_tl || ''),
-      description_en: String(langData.en?.desc || translated.description_en || ''),
-      description_zh: String(langData.zh?.desc || translated.description_zh || ''),
-      description_vi: String(langData.vi?.desc || translated.description_vi || ''),
-      description_tl: String(langData.ph?.desc || langData.tl?.desc || translated.description_tl || ''),
+      title_en: String(topName || translated.name_en || translated.title_en || ''),
+      title_zh: String(origLangData.zh?.name || translated.name_zh || translated.title_zh || ''),
+      title_vi: String(origLangData.vi?.name || translated.name_vi || translated.title_vi || ''),
+      title_tl: String(origLangData.ph?.name || origLangData.tl?.name || translated.name_tl || translated.title_tl || ''),
+      description_en: String(topDesc || translated.description_en || ''),
+      description_zh: String(origLangData.zh?.desc || translated.description_zh || ''),
+      description_vi: String(origLangData.vi?.desc || translated.description_vi || ''),
+      description_tl: String(origLangData.ph?.desc || origLangData.tl?.desc || translated.description_tl || ''),
       image: translated.image || (Array.isArray(translated.images) ? translated.images[0] : '') || '',
       order_num: parseInt(translated.order_num) || 0,
       is_active: translated.is_active !== false ? 1 : 0,
@@ -3007,7 +3012,7 @@ app.get('/api/about', (_req, res) => {
 });
 
 // ============ About 新增保存接口（自动翻译） ============
-app.post('/api/about', async (req, res) => {
+app.post('/api/about', (req, res) => {
   const about = req.body;
   const isArrayFormat = Array.isArray(about);
   
@@ -3017,152 +3022,28 @@ app.post('/api/about', async (req, res) => {
       delete cleanAbout[key];
     }
   });
-  if (cleanAbout.team_members && Array.isArray(cleanAbout.team_members)) {
-    cleanAbout.team_members = cleanAbout.team_members.map(m => {
-      const cleaned = { ...m };
+  
+  const cleanArrayItems = (arr) => {
+    if (!Array.isArray(arr)) return arr;
+    return arr.map(item => {
+      if (typeof item !== 'object' || item === null) return item;
+      const cleaned = { ...item };
       Object.keys(cleaned).forEach(key => {
         if (/_zh$|_vi$|_tl$/.test(key)) {
           delete cleaned[key];
         }
       });
       return cleaned;
-    });
-  }
-  
-  console.log('[POST /api/about] cleanAbout:', JSON.stringify(cleanAbout).slice(0, 500));
-  
-  const translated = await autoTranslateAbout(cleanAbout, true);
-  console.log('[POST /api/about] translated:', JSON.stringify(translated).slice(0, 500));
-
-  const processedKeys = new Set();
-  
-  const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
-  
-  const insertRow = (key, valueEn, valueZh, valueVi, valueTl) => {
-    stmt.run({
-      section: 'main',
-      key: key,
-      value_en: valueEn,
-      value_zh: valueZh,
-      value_vi: valueVi,
-      value_tl: valueTl
     });
   };
-
-  try {
-    db.prepare('DELETE FROM about').run();
-    
-    const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
-    const insert = db.transaction((data) => {
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === 'team_members' || key.startsWith('team_members_')) return;
-        
-        const baseKey = key.replace(/_(zh|vi|tl)$/, '');
-        
-        if (baseKey !== key) {
-          if (processedKeys.has(baseKey)) return;
-          processedKeys.add(baseKey);
-          insertRow(
-            baseKey,
-            getValue(data[baseKey]),
-            getValue(data[`${baseKey}_zh`]),
-            getValue(data[`${baseKey}_vi`]),
-            getValue(data[`${baseKey}_tl`])
-          );
-        } else {
-          if (processedKeys.has(key)) return;
-          processedKeys.add(key);
-          insertRow(
-            key,
-            getValue(value),
-            getValue(data[`${key}_zh`]),
-            getValue(data[`${key}_vi`]),
-            getValue(data[`${key}_tl`])
-          );
-        }
-      });
-    });    
-    
-    insert(translated);
-    
-    db.prepare('DELETE FROM team_members').run();
-    
-    const tmArray = isArrayFormat ? translated : (translated['team_members'] || []);
-    
-    if (Array.isArray(tmArray) && tmArray.length > 0) {
-      const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
-      
-      tmArray.forEach((m, i) => {
-        try {
-          const nameEn = String(m.name_en || m.name || '');
-          const slug = nameEn.toLowerCase().replace(/\s+/g, '-') || 'member-' + (i+1);
-          const initialChar = (m.initial && typeof m.initial === 'string' && m.initial[0]) || nameEn[0] || '?';
-          
-          tmStmt.run({
-            slug: slug,
-            visible: m.visible !== false ? 1 : 0,
-            order_num: i,
-            name_en: nameEn,
-            name_zh: String(m.name_zh || ''),
-            name_vi: String(m.name_vi || ''),
-            name_tl: String(m.name_tl || ''),
-            role_en: String(m.role_en || m.role || ''),
-            role_zh: String(m.role_zh || ''),
-            role_vi: String(m.role_vi || ''),
-            role_tl: String(m.role_tl || ''),
-            desc_en: String(m.desc_en || m.desc || ''),
-            desc_zh: String(m.desc_zh || ''),
-            desc_vi: String(m.desc_vi || ''),
-            desc_tl: String(m.desc_tl || ''),
-            photo: String(m.photo || ''),
-            email: String(m.email || ''),
-            color: String(m.color || '#2563eb'),
-            initial: String(initialChar).toUpperCase()
-          });
-        } catch (insertErr) {
-          console.error('[DB] 插入团队成员失败：', insertErr.message);
-        }
-      });
-    }
-    
-    console.log('[DB] About 数据（自动翻译）已保存');
-  } catch (dbErr) {
-    console.error('[DB] 保存 About 数据失败：', dbErr.message);
-  }
   
-  // 同时保存到 JSON（保持同步/备份）
-  writeDataFile('about.json', translated);
-  res.json({ success: true, data: translated });
-});
-
-app.put('/api/about', async (req, res) => {
-  const about = req.body;
-  const isArrayFormat = Array.isArray(about);
-  
-  console.log('[PUT /api/about] received data:', JSON.stringify(about).slice(0, 500));
-  
-  const cleanAbout = { ...about };
-  Object.keys(cleanAbout).forEach(key => {
-    if (/_zh$|_vi$|_tl$/.test(key)) {
-      delete cleanAbout[key];
-    }
-  });
   if (cleanAbout.team_members && Array.isArray(cleanAbout.team_members)) {
-    cleanAbout.team_members = cleanAbout.team_members.map(m => {
-      const cleaned = { ...m };
-      Object.keys(cleaned).forEach(key => {
-        if (/_zh$|_vi$|_tl$/.test(key)) {
-          delete cleaned[key];
-        }
-      });
-      return cleaned;
-    });
+    cleanAbout.team_members = cleanArrayItems(cleanAbout.team_members);
   }
-  
-  console.log('[PUT /api/about] cleanAbout:', JSON.stringify(cleanAbout).slice(0, 500));
-  
-  const translated = await autoTranslateAbout(cleanAbout, true);
-  console.log('[PUT /api/about] translated:', JSON.stringify(translated).slice(0, 500));
+  if (cleanAbout.capacity_cards && Array.isArray(cleanAbout.capacity_cards)) {
+    cleanAbout.capacity_cards = cleanArrayItems(cleanAbout.capacity_cards);
+  }
+
   const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
 
   try {
@@ -3171,49 +3052,31 @@ app.put('/api/about', async (req, res) => {
     const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
     const processedKeys = new Set();
     
-    const insertRow = (key, valueEn, valueZh, valueVi, valueTl) => {
-      stmt.run({
-        section: 'main',
-        key: key,
-        value_en: valueEn,
-        value_zh: valueZh,
-        value_vi: valueVi,
-        value_tl: valueTl
-      });
-    };
-    
-    Object.entries(translated).forEach(([key, value]) => {
+    Object.entries(cleanAbout).forEach(([key, value]) => {
       if (key === 'team_members' || key.startsWith('team_members_')) return;
-      
       const baseKey = key.replace(/_(zh|vi|tl)$/, '');
-      
       if (baseKey !== key) {
         if (processedKeys.has(baseKey)) return;
         processedKeys.add(baseKey);
-        insertRow(
-          baseKey,
-          getValue(translated[baseKey]),
-          getValue(translated[`${baseKey}_zh`]),
-          getValue(translated[`${baseKey}_vi`]),
-          getValue(translated[`${baseKey}_tl`])
-        );
+        stmt.run({
+          section: 'main', key: baseKey,
+          value_en: getValue(cleanAbout[baseKey]),
+          value_zh: '', value_vi: '', value_tl: ''
+        });
       } else {
         if (processedKeys.has(key)) return;
         processedKeys.add(key);
-        insertRow(
-          key,
-          getValue(value),
-          getValue(translated[`${key}_zh`]),
-          getValue(translated[`${key}_vi`]),
-          getValue(translated[`${key}_tl`])
-        );
+        stmt.run({
+          section: 'main', key: key,
+          value_en: getValue(value),
+          value_zh: '', value_vi: '', value_tl: ''
+        });
       }
     });
     
     db.prepare('DELETE FROM team_members').run();
     
-    const tmArray = isArrayFormat ? translated : (translated['team_members'] || []);
-    
+    const tmArray = isArrayFormat ? cleanAbout : (cleanAbout['team_members'] || []);
     if (Array.isArray(tmArray) && tmArray.length > 0) {
       const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
       
@@ -3222,27 +3085,13 @@ app.put('/api/about', async (req, res) => {
           const nameEn = String(m.name_en || m.name || '');
           const slug = nameEn.toLowerCase().replace(/\s+/g, '-') || 'member-' + (i+1);
           const initialChar = (m.initial && typeof m.initial === 'string' && m.initial[0]) || nameEn[0] || '?';
-          
           tmStmt.run({
-            slug: slug,
-            visible: m.visible !== false ? 1 : 0,
-            order_num: i,
-            name_en: nameEn,
-            name_zh: String(m.name_zh || ''),
-            name_vi: String(m.name_vi || ''),
-            name_tl: String(m.name_tl || ''),
-            role_en: String(m.role_en || m.role || ''),
-            role_zh: String(m.role_zh || ''),
-            role_vi: String(m.role_vi || ''),
-            role_tl: String(m.role_tl || ''),
-            desc_en: String(m.desc_en || m.desc || ''),
-            desc_zh: String(m.desc_zh || ''),
-            desc_vi: String(m.desc_vi || ''),
-            desc_tl: String(m.desc_tl || ''),
-            photo: String(m.photo || ''),
-            email: String(m.email || ''),
-            color: String(m.color || '#2563eb'),
-            initial: String(initialChar).toUpperCase()
+            slug, visible: m.visible !== false ? 1 : 0, order_num: i,
+            name_en: nameEn, name_zh: '', name_vi: '', name_tl: '',
+            role_en: String(m.role_en || m.role || ''), role_zh: '', role_vi: '', role_tl: '',
+            desc_en: String(m.desc_en || m.desc || ''), desc_zh: '', desc_vi: '', desc_tl: '',
+            photo: String(m.photo || ''), email: String(m.email || ''),
+            color: String(m.color || '#2563eb'), initial: String(initialChar).toUpperCase()
           });
         } catch (insertErr) {
           console.error('[DB] 插入团队成员失败：', insertErr.message);
@@ -3250,13 +3099,226 @@ app.put('/api/about', async (req, res) => {
       });
     }
     
-    console.log('[DB] About 数据（自动翻译）已保存');
+    writeDataFile('about.json', cleanAbout);
+    res.json({ success: true, message: 'Data saved, translation in progress' });
   } catch (dbErr) {
     console.error('[DB] 保存 About 数据失败：', dbErr.message);
+    res.status(500).json({ success: false, error: dbErr.message });
+    return;
   }
   
-  writeDataFile('about.json', translated);
-  res.json({ success: true, data: translated });
+  setImmediate(async () => {
+    try {
+      const translated = await autoTranslateAbout(cleanAbout, true);
+      
+      db.prepare('DELETE FROM about').run();
+      db.prepare('DELETE FROM team_members').run();
+      
+      const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
+      const processedKeys = new Set();
+      const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
+      
+      Object.entries(translated).forEach(([key, value]) => {
+        if (key === 'team_members' || key.startsWith('team_members_')) return;
+        const baseKey = key.replace(/_(zh|vi|tl)$/, '');
+        if (baseKey !== key) {
+          if (processedKeys.has(baseKey)) return;
+          processedKeys.add(baseKey);
+          stmt.run({
+            section: 'main', key: baseKey,
+            value_en: getValue(translated[baseKey]),
+            value_zh: getValue(translated[`${baseKey}_zh`]),
+            value_vi: getValue(translated[`${baseKey}_vi`]),
+            value_tl: getValue(translated[`${baseKey}_tl`])
+          });
+        } else {
+          if (processedKeys.has(key)) return;
+          processedKeys.add(key);
+          stmt.run({
+            section: 'main', key: key,
+            value_en: getValue(value),
+            value_zh: getValue(translated[`${key}_zh`]),
+            value_vi: getValue(translated[`${key}_vi`]),
+            value_tl: getValue(translated[`${key}_tl`])
+          });
+        }
+      });
+      
+      const tmArray = isArrayFormat ? translated : (translated['team_members'] || []);
+      if (Array.isArray(tmArray) && tmArray.length > 0) {
+        const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
+        
+        tmArray.forEach((m, i) => {
+          try {
+            const nameEn = String(m.name_en || m.name || '');
+            const slug = nameEn.toLowerCase().replace(/\s+/g, '-') || 'member-' + (i+1);
+            const initialChar = (m.initial && typeof m.initial === 'string' && m.initial[0]) || nameEn[0] || '?';
+            tmStmt.run({
+              slug, visible: m.visible !== false ? 1 : 0, order_num: i,
+              name_en: nameEn, name_zh: String(m.name_zh || ''), name_vi: String(m.name_vi || ''), name_tl: String(m.name_tl || ''),
+              role_en: String(m.role_en || m.role || ''), role_zh: String(m.role_zh || ''), role_vi: String(m.role_vi || ''), role_tl: String(m.role_tl || ''),
+              desc_en: String(m.desc_en || m.desc || ''), desc_zh: String(m.desc_zh || ''), desc_vi: String(m.desc_vi || ''), desc_tl: String(m.desc_tl || ''),
+              photo: String(m.photo || ''), email: String(m.email || ''),
+              color: String(m.color || '#2563eb'), initial: String(initialChar).toUpperCase()
+            });
+          } catch (e) { console.error('[BG] 翻译后保存团队成员失败：', e.message); }
+        });
+      }
+      
+      writeDataFile('about.json', translated);
+      console.log('[BG] About 翻译完成并保存');
+    } catch (e) {
+      console.error('[BG] About 翻译失败：', e.message);
+    }
+  });
+});
+
+app.put('/api/about', (req, res) => {
+  const about = req.body;
+  const isArrayFormat = Array.isArray(about);
+  
+  const cleanAbout = { ...about };
+  Object.keys(cleanAbout).forEach(key => {
+    if (/_zh$|_vi$|_tl$/.test(key)) {
+      delete cleanAbout[key];
+    }
+  });
+  if (cleanAbout.team_members && Array.isArray(cleanAbout.team_members)) {
+    cleanAbout.team_members = cleanAbout.team_members.map(m => {
+      const cleaned = { ...m };
+      Object.keys(cleaned).forEach(key => {
+        if (/_zh$|_vi$|_tl$/.test(key)) {
+          delete cleaned[key];
+        }
+      });
+      return cleaned;
+    });
+  }
+
+  const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
+
+  try {
+    db.prepare('DELETE FROM about').run();
+    const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
+    const processedKeys = new Set();
+    
+    Object.entries(cleanAbout).forEach(([key, value]) => {
+      if (key === 'team_members' || key.startsWith('team_members_')) return;
+      const baseKey = key.replace(/_(zh|vi|tl)$/, '');
+      if (baseKey !== key) {
+        if (processedKeys.has(baseKey)) return;
+        processedKeys.add(baseKey);
+        stmt.run({
+          section: 'main', key: baseKey,
+          value_en: getValue(cleanAbout[baseKey]),
+          value_zh: '', value_vi: '', value_tl: ''
+        });
+      } else {
+        if (processedKeys.has(key)) return;
+        processedKeys.add(key);
+        stmt.run({
+          section: 'main', key: key,
+          value_en: getValue(value),
+          value_zh: '', value_vi: '', value_tl: ''
+        });
+      }
+    });
+    
+    db.prepare('DELETE FROM team_members').run();
+    
+    const tmArray = isArrayFormat ? cleanAbout : (cleanAbout['team_members'] || []);
+    if (Array.isArray(tmArray) && tmArray.length > 0) {
+      const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
+      
+      tmArray.forEach((m, i) => {
+        try {
+          const nameEn = String(m.name_en || m.name || '');
+          const slug = nameEn.toLowerCase().replace(/\s+/g, '-') || 'member-' + (i+1);
+          const initialChar = (m.initial && typeof m.initial === 'string' && m.initial[0]) || nameEn[0] || '?';
+          tmStmt.run({
+            slug, visible: m.visible !== false ? 1 : 0, order_num: i,
+            name_en: nameEn, name_zh: '', name_vi: '', name_tl: '',
+            role_en: String(m.role_en || m.role || ''), role_zh: '', role_vi: '', role_tl: '',
+            desc_en: String(m.desc_en || m.desc || ''), desc_zh: '', desc_vi: '', desc_tl: '',
+            photo: String(m.photo || ''), email: String(m.email || ''),
+            color: String(m.color || '#2563eb'), initial: String(initialChar).toUpperCase()
+          });
+        } catch (e) { console.error('[DB] 插入团队成员失败：', e.message); }
+      });
+    }
+    
+    writeDataFile('about.json', cleanAbout);
+    res.json({ success: true, message: 'Data saved, translation in progress' });
+  } catch (dbErr) {
+    console.error('[DB] 保存 About 数据失败：', dbErr.message);
+    res.status(500).json({ success: false, error: dbErr.message });
+    return;
+  }
+  
+  setImmediate(async () => {
+    try {
+      const translated = await autoTranslateAbout(cleanAbout, true);
+      
+      db.prepare('DELETE FROM about').run();
+      db.prepare('DELETE FROM team_members').run();
+      
+      const getValue = (v) => typeof v === 'string' ? v : JSON.stringify(v);
+      const processedKeys = new Set();
+      const stmt = db.prepare('INSERT INTO about (section, key, value_en, value_zh, value_vi, value_tl) VALUES (@section, @key, @value_en, @value_zh, @value_vi, @value_tl)');
+      
+      Object.entries(translated).forEach(([key, value]) => {
+        if (key === 'team_members' || key.startsWith('team_members_')) return;
+        const baseKey = key.replace(/_(zh|vi|tl)$/, '');
+        if (baseKey !== key) {
+          if (processedKeys.has(baseKey)) return;
+          processedKeys.add(baseKey);
+          stmt.run({
+            section: 'main', key: baseKey,
+            value_en: getValue(translated[baseKey]),
+            value_zh: getValue(translated[`${baseKey}_zh`]),
+            value_vi: getValue(translated[`${baseKey}_vi`]),
+            value_tl: getValue(translated[`${baseKey}_tl`])
+          });
+        } else {
+          if (processedKeys.has(key)) return;
+          processedKeys.add(key);
+          stmt.run({
+            section: 'main', key: key,
+            value_en: getValue(value),
+            value_zh: getValue(translated[`${key}_zh`]),
+            value_vi: getValue(translated[`${key}_vi`]),
+            value_tl: getValue(translated[`${key}_tl`])
+          });
+        }
+      });
+      
+      const tmArray = isArrayFormat ? translated : (translated['team_members'] || []);
+      if (Array.isArray(tmArray) && tmArray.length > 0) {
+        const tmStmt = db.prepare('INSERT INTO team_members (slug, visible, order_num, name_en, name_zh, name_vi, name_tl, role_en, role_zh, role_vi, role_tl, desc_en, desc_zh, desc_vi, desc_tl, photo, email, color, initial) VALUES (@slug, @visible, @order_num, @name_en, @name_zh, @name_vi, @name_tl, @role_en, @role_zh, @role_vi, @role_tl, @desc_en, @desc_zh, @desc_vi, @desc_tl, @photo, @email, @color, @initial)');
+        
+        tmArray.forEach((m, i) => {
+          try {
+            const nameEn = String(m.name_en || m.name || '');
+            const slug = nameEn.toLowerCase().replace(/\s+/g, '-') || 'member-' + (i+1);
+            const initialChar = (m.initial && typeof m.initial === 'string' && m.initial[0]) || nameEn[0] || '?';
+            tmStmt.run({
+              slug, visible: m.visible !== false ? 1 : 0, order_num: i,
+              name_en: nameEn, name_zh: String(m.name_zh || ''), name_vi: String(m.name_vi || ''), name_tl: String(m.name_tl || ''),
+              role_en: String(m.role_en || m.role || ''), role_zh: String(m.role_zh || ''), role_vi: String(m.role_vi || ''), role_tl: String(m.role_tl || ''),
+              desc_en: String(m.desc_en || m.desc || ''), desc_zh: String(m.desc_zh || ''), desc_vi: String(m.desc_vi || ''), desc_tl: String(m.desc_tl || ''),
+              photo: String(m.photo || ''), email: String(m.email || ''),
+              color: String(m.color || '#2563eb'), initial: String(initialChar).toUpperCase()
+            });
+          } catch (e) { console.error('[BG] 翻译后保存团队成员失败：', e.message); }
+        });
+      }
+      
+      writeDataFile('about.json', translated);
+      console.log('[BG] About 翻译完成并保存');
+    } catch (e) {
+      console.error('[BG] About 翻译失败：', e.message);
+    }
+  });
 });
 
 // About 图片上传

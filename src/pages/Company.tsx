@@ -224,9 +224,37 @@ export default function Company() {
       .then(r => r.json())
       .then(json => {
         if (json.success && json.data && Object.keys(json.data).length > 0) {
-          // 合并默认值（防止缺失字段）
           const def = defaultAboutData();
-          setData({ ...def, ...json.data });
+          const loadedData = json.data;
+          const parseArray = (val: any, maxItems?: number) => {
+            let arr;
+            if (Array.isArray(val)) arr = val;
+            else if (typeof val === 'string') {
+              try { arr = JSON.parse(val); } catch { arr = []; }
+            } else {
+              arr = [];
+            }
+            if (maxItems && arr.length > maxItems) {
+              arr = arr.slice(0, maxItems);
+            }
+            return arr;
+          };
+          const cleanLangFields = (item: any) => {
+            if (typeof item !== 'object' || item === null) return item;
+            const cleaned: any = {};
+            Object.keys(item).forEach(key => {
+              if (!/_zh$|_vi$|_tl$/.test(key)) {
+                cleaned[key] = item[key];
+              }
+            });
+            return cleaned;
+          };
+          loadedData.milestones = parseArray(loadedData.milestones, 10).map(cleanLangFields);
+          loadedData.factory_images = parseArray(loadedData.factory_images, 4);
+          loadedData.capacity_cards = parseArray(loadedData.capacity_cards, 6).map(cleanLangFields);
+          loadedData.certifications = parseArray(loadedData.certifications);
+          loadedData.team_members = parseArray(loadedData.team_members);
+          setData({ ...def, ...loadedData });
         }
       })
       .catch(err => console.warn('Load about data failed:', err))
@@ -462,9 +490,9 @@ export default function Company() {
                           }} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
-                    <TextInput label="标题" value={card.title}
+                    <TextInput label="标题 (EN)" value={card.title}
                       onChange={v => { const arr = [...data.capacity_cards]; arr[idx] = { ...arr[idx], title: v }; setField('capacity_cards', arr); }} />
-                    <TextField label="描述" value={card.desc}
+                    <TextField label="描述 (EN)" value={card.desc}
                       onChange={v => { const arr = [...data.capacity_cards]; arr[idx] = { ...arr[idx], desc: v }; setField('capacity_cards', arr); }} />
                   </div>
                 ))}

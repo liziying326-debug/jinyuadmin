@@ -12,5 +12,11 @@
     "password": "MTIzNDU2",
     "role": "admin",
     "createdAt": "2026-04-13T12:27:20.472Z"
+  },
+  {
+    "id": 1,
+    "username": "admin1",
+    "role": "admin",
+    "createdAt": "2026-05-14T13:36:52.372Z"
   }
 ]
