@@ -21,6 +21,7 @@ interface FactoryImage {
 interface CapacityCard {
   title: string;
   desc: string;
+  is_active?: boolean;
 }
 
 interface Certification {
@@ -454,51 +455,70 @@ export default function Company() {
           )}
 
           {/* 产能卡片 Tab */}
-          {activeTab === 'capacity' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-gray-500">前台展示 2 行 3 列网格，共 6 张卡片</p>
-                <button
-                  onClick={() => {
-                    const newItem: CapacityCard = { title: '', desc: '' };
-                    setField('capacity_cards', [...data.capacity_cards, newItem]);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" /> 添加卡片
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {data.capacity_cards.map((card, idx) => (
-                  <div key={idx} className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-700">卡片 #{idx + 1}</span>
-                      <div className="flex gap-1">
-                        {idx > 0 && <button onClick={() => {
-                          const arr = [...data.capacity_cards];
-                          [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
-                          setField('capacity_cards', arr);
-                        }} className="p-1.5 text-gray-400 hover:text-blue-600"><ArrowUp className="w-4 h-4" /></button>}
-                        {idx < data.capacity_cards.length - 1 && <button onClick={() => {
-                          const arr = [...data.capacity_cards];
-                          [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
-                          setField('capacity_cards', arr);
-                          }} className="p-1.5 text-gray-400 hover:text-blue-600"><ArrowDown className="w-4 h-4" /></button>}
-                          <button onClick={() => {
-                            const arr = data.capacity_cards.filter((_, i) => i !== idx);
-                            setField('capacity_cards', arr);
-                          }} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+          {activeTab === 'capacity' && (() => {
+            const activeCards = data.capacity_cards.filter(c => c.is_active !== false);
+            const canAddMore = activeCards.length < 6;
+            return (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-gray-500">前台展示 2 行 3 列网格，最多 6 张卡片</p>
+                  <button
+                    onClick={() => {
+                      const newItem: CapacityCard = { title: '', desc: '', is_active: true };
+                      setField('capacity_cards', [...data.capacity_cards, newItem]);
+                    }}
+                    disabled={!canAddMore}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${canAddMore ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                  >
+                    <Plus className="w-3.5 h-3.5" /> 添加卡片 ({activeCards.length}/6)
+                  </button>
+                </div>
+                {!canAddMore && <p className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">已达到最大数量 6 张，请先关闭部分卡片后再添加。</p>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {data.capacity_cards.map((card, idx) => {
+                    const isActive = card.is_active !== false;
+                    return (
+                      <div key={idx} className={`bg-gray-50 rounded-xl p-4 border space-y-3 ${isActive ? 'border-gray-100' : 'border-gray-200 opacity-60'}`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input type="checkbox" checked={isActive} onChange={(e) => {
+                                const arr = [...data.capacity_cards];
+                                arr[idx] = { ...arr[idx], is_active: e.target.checked };
+                                setField('capacity_cards', arr);
+                              }} className="sr-only peer" />
+                              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                            <span className={`text-sm font-bold ${isActive ? 'text-gray-700' : 'text-gray-400'}`}>卡片 #{idx + 1} {isActive ? '(启用)' : '(禁用)'}</span>
+                          </div>
+                          <div className="flex gap-1">
+                            {idx > 0 && <button onClick={() => {
+                              const arr = [...data.capacity_cards];
+                              [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+                              setField('capacity_cards', arr);
+                            }} className="p-1.5 text-gray-400 hover:text-blue-600"><ArrowUp className="w-4 h-4" /></button>}
+                            {idx < data.capacity_cards.length - 1 && <button onClick={() => {
+                              const arr = [...data.capacity_cards];
+                              [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
+                              setField('capacity_cards', arr);
+                            }} className="p-1.5 text-gray-400 hover:text-blue-600"><ArrowDown className="w-4 h-4" /></button>}
+                              <button onClick={() => {
+                                const arr = data.capacity_cards.filter((_, i) => i !== idx);
+                                setField('capacity_cards', arr);
+                              }} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                        </div>
+                        <TextInput label="标题 (EN)" value={card.title} disabled={!isActive}
+                          onChange={v => { const arr = [...data.capacity_cards]; arr[idx] = { ...arr[idx], title: v }; setField('capacity_cards', arr); }} />
+                        <TextField label="描述 (EN)" value={card.desc} disabled={!isActive}
+                          onChange={v => { const arr = [...data.capacity_cards]; arr[idx] = { ...arr[idx], desc: v }; setField('capacity_cards', arr); }} />
                       </div>
-                    </div>
-                    <TextInput label="标题 (EN)" value={card.title}
-                      onChange={v => { const arr = [...data.capacity_cards]; arr[idx] = { ...arr[idx], title: v }; setField('capacity_cards', arr); }} />
-                    <TextField label="描述 (EN)" value={card.desc}
-                      onChange={v => { const arr = [...data.capacity_cards]; arr[idx] = { ...arr[idx], desc: v }; setField('capacity_cards', arr); }} />
-                  </div>
-                ))}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* 团队成员 Tab */}
           {activeTab === 'team' && (

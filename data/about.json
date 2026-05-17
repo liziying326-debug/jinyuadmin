@@ -74,11 +74,38 @@
   "capacity_cards": [
     {
       "title": "hi",
-      "desc": "title"
+      "desc": "title",
+      "is_active": true
     },
     {
       "title": "pass",
-      "desc": "oss"
+      "desc": "oss",
+      "is_active": false
+    },
+    {
+      "title": "333",
+      "desc": "333",
+      "is_active": true
+    },
+    {
+      "title": "444",
+      "desc": "444",
+      "is_active": true
+    },
+    {
+      "title": "555",
+      "desc": "555",
+      "is_active": true
+    },
+    {
+      "title": "666",
+      "desc": "666",
+      "is_active": true
+    },
+    {
+      "title": "777",
+      "desc": "777",
+      "is_active": true
     }
   ],
   "certifications": [],
@@ -297,42 +324,153 @@
     {
       "title": "hi",
       "desc": "title",
+      "is_active": true,
       "title_zh": "嗨",
       "desc_zh": "标题"
     },
     {
       "title": "pass",
       "desc": "oss",
+      "is_active": false,
       "title_zh": "通行证",
       "desc_zh": "操作系统"
+    },
+    {
+      "title": "333",
+      "desc": "333",
+      "is_active": true,
+      "title_zh": "333",
+      "desc_zh": "333"
+    },
+    {
+      "title": "444",
+      "desc": "444",
+      "is_active": true,
+      "title_zh": "444",
+      "desc_zh": "444"
+    },
+    {
+      "title": "555",
+      "desc": "555",
+      "is_active": true,
+      "title_zh": "555",
+      "desc_zh": "555"
+    },
+    {
+      "title": "666",
+      "desc": "666",
+      "is_active": true,
+      "title_zh": "666",
+      "desc_zh": "666"
+    },
+    {
+      "title": "777",
+      "desc": "777",
+      "is_active": true,
+      "title_zh": "777",
+      "desc_zh": "777"
     }
   ],
   "capacity_cards_vi": [
     {
       "title": "hi",
       "desc": "title",
+      "is_active": true,
       "title_vi": "Xin chào",
       "desc_vi": "Tiêu đề"
     },
     {
       "title": "pass",
       "desc": "oss",
+      "is_active": false,
       "title_vi": "Vượt qua",
       "desc_vi": "Hệ điều hành"
+    },
+    {
+      "title": "333",
+      "desc": "333",
+      "is_active": true,
+      "title_vi": "333",
+      "desc_vi": "333"
+    },
+    {
+      "title": "444",
+      "desc": "444",
+      "is_active": true,
+      "title_vi": "444",
+      "desc_vi": "444"
+    },
+    {
+      "title": "555",
+      "desc": "555",
+      "is_active": true,
+      "title_vi": "555",
+      "desc_vi": "555"
+    },
+    {
+      "title": "666",
+      "desc": "666",
+      "is_active": true,
+      "title_vi": "666",
+      "desc_vi": "666"
+    },
+    {
+      "title": "777",
+      "desc": "777",
+      "is_active": true,
+      "title_vi": "777",
+      "desc_vi": "777"
     }
   ],
   "capacity_cards_tl": [
     {
       "title": "hi",
       "desc": "title",
+      "is_active": true,
       "title_tl": "hi",
       "desc_tl": "pamagat"
     },
     {
       "title": "pass",
       "desc": "oss",
+      "is_active": false,
       "title_tl": "Pumasa",
       "desc_tl": "OSS"
+    },
+    {
+      "title": "333",
+      "desc": "333",
+      "is_active": true,
+      "title_tl": "333",
+      "desc_tl": "333"
+    },
+    {
+      "title": "444",
+      "desc": "444",
+      "is_active": true,
+      "title_tl": "444",
+      "desc_tl": "444"
+    },
+    {
+      "title": "555",
+      "desc": "555",
+      "is_active": true,
+      "title_tl": "555",
+      "desc_tl": "555"
+    },
+    {
+      "title": "666",
+      "desc": "666",
+      "is_active": true,
+      "title_tl": "666",
+      "desc_tl": "666"
+    },
+    {
+      "title": "777",
+      "desc": "777",
+      "is_active": true,
+      "title_tl": "777",
+      "desc_tl": "777"
     }
   ]
 }
