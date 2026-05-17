@@ -39,6 +39,11 @@
       "year": "2024",
       "title": "ISO 9001 Certification Achieved",
       "desc": "Successfully completed ISO 9001:2015 quality management system certification. Full quality documentation and continuous improvement systems formalized."
+    },
+    {
+      "year": "test 1",
+      "title": "test 2",
+      "desc": "test 3"
     }
   ],
   "factory_images": [
@@ -121,7 +126,7 @@
       "email": "vivian@materials-ad.com",
       "name_zh": "15薇薇安1",
       "role_zh": "出口销售经理",
-      "desc_zh": "国际B2B销售、客户关系及出口文件。所有国际咨询均可直接联系。",
+      "desc_zh": "国际B2B销售、客户关系和出口文件。所有国际咨询均可直接联系。",
       "name_vi": "15Vivian1",
       "role_vi": "Giám đốc kinh doanh xuất khẩu",
       "desc_vi": "Bán hàng B2B quốc tế, quan hệ khách hàng và tài liệu xuất khẩu. Liên hệ trực tiếp cho tất cả các yêu cầu quốc tế.",
@@ -178,10 +183,10 @@
       "email": "",
       "name_zh": "雨果",
       "role_zh": "创始人兼总经理",
-      "desc_zh": "凭借数十年广告材料行业经验，他领导公司整体战略、产品开发和质量管理。他专注于稳定的产品表现和全球市场拓展，致力于为东南亚合作伙伴提供具成本效益且可靠的广告材料解决方案。",
+      "desc_zh": "凭借数十年广告材料行业经验，他领导公司的整体战略、产品开发和质量管理。他专注于稳定的产品表现和全球市场拓展，致力于为东南亚合作伙伴提供经济且可靠的广告材料解决方案。",
       "name_vi": "HUGO",
       "role_vi": "Người sáng lập & Tổng giám đốc",
-      "desc_vi": "Với nhiều thập kỷ kinh nghiệm trong ngành tài liệu quảng cáo, ông dẫn dắt chiến lược tổng thể, phát triển sản phẩm và quản lý chất lượng của công ty. Ông tập trung vào hiệu suất sản phẩm ổn định và mở rộng thị trường toàn cầu, chuyên cung cấp các giải pháp vật liệu quảng cáo đáng tin cậy và hiệu quả về chi phí cho các đối tác Đông Nam Á.",
+      "desc_vi": "Với nhiều thập kỷ kinh nghiệm trong ngành tài liệu quảng cáo, ông dẫn dắt chiến lược tổng thể, phát triển sản phẩm và quản lý chất lượng của công ty. Ông tập trung vào hiệu suất sản phẩm ổn định và mở rộng thị trường toàn cầu, chuyên cung cấp các giải pháp tài liệu quảng cáo đáng tin cậy và hiệu quả về chi phí cho các đối tác Đông Nam Á.",
       "name_tl": "HUGO",
       "role_tl": "Tagapagtatag at Pangkalahatang Tagapamahala",
       "desc_tl": "Sa mga dekada ng karanasan sa industriya ng mga materyales sa advertising, pinamumunuan niya ang pangkalahatang diskarte ng kumpanya, pag-unlad ng produkto at pamamahala ng kalidad. Nakatuon siya sa matatag na pagganap ng produkto at pagpapalawak ng pandaigdigang merkado, na nakatuon sa pag-aalok ng cost-effective at maaasahang mga solusyon sa materyal na advertising para sa mga kasosyo sa Timog-silangang Asya."
@@ -197,13 +202,13 @@
       "email": "",
       "name_zh": "杰基",
       "role_zh": "质量控制经理",
-      "desc_zh": "负责生产管理和全流程质量检验。严格管控原材料、生产工艺和成品检测，确保每批商品符合出口质量标准。",
+      "desc_zh": "负责生产管理和全流程质量检查。严格管控原材料、生产工艺和成品检测，确保每批商品都符合出口质量标准。",
       "name_vi": "Jckie",
       "role_vi": "Giám đốc kiểm soát chất lượng",
-      "desc_vi": "Phụ trách quản lý sản xuất và kiểm tra chất lượng toàn bộ. Kiểm soát chặt chẽ nguyên liệu, quy trình sản xuất và kiểm tra thành phẩm để đảm bảo mỗi lô hàng đều đạt tiêu chuẩn chất lượng xuất khẩu.",
+      "desc_vi": "Phụ trách quản lý sản xuất và kiểm tra chất lượng toàn bộ. Kiểm soát chặt chẽ nguyên liệu, quy trình sản xuất và kiểm tra thành phẩm để đảm bảo mọi lô hàng đều đạt tiêu chuẩn chất lượng xuất khẩu.",
       "name_tl": "Jckie",
       "role_tl": "Tagapamahala ng Kontrol sa Kalidad",
-      "desc_tl": "Namamahala sa pamamahala ng produksyon at inspeksyon ng kalidad ng buong proseso. Mahigpit na kinokontrol ang mga hilaw na materyales, proseso ng produksyon at pagsubok ng tapos na produkto upang matiyak na ang bawat batch ng mga kalakal ay nakakatugon sa mga pamantayan sa kalidad ng pag-export."
+      "desc_tl": "Namamahala sa pamamahala ng produksyon at inspeksyon ng kalidad ng buong proseso. Mahigpit na kinokontrol ang mga hilaw na materyales, proseso ng produksyon at natapos na pagsubok ng produkto upang matiyak na ang bawat batch ng mga kalakal ay nakakatugon sa mga pamantayan sa kalidad ng pag-export."
     }
   ],
   "intro_title_zh": "介绍 第二标题",
@@ -241,14 +246,14 @@
   "contact_email_tl": "vivian@materials-ad.com",
   "milestones_zh": [
     {
-      "year": "92009 · 12年级",
+      "year": "92009 ·12年级",
       "title": "公司成立",
-      "desc": "佛山金宇广告材料有限公司正式成立于佛山南海区。最初的产品线专注于PVC泡沫板和自粘乙烯基，面向国内市场供应。"
+      "desc": "佛山金宇广告材料有限公司正式成立于佛山南海区。最初的产品线主要集中在国内市场供应的PVC泡沫板和自粘乙烯基。"
     },
     {
       "year": "2012年10月10日",
       "title": "首批国际客户——广州博览会",
-      "desc": "首次参加广州博览会。成功与东南亚、中东和欧洲的海外买家建立合作关系。"
+      "desc": "首次参加广州博览会。成功与东南亚、中东和欧洲的海外买家建立了合作关系。"
     },
     {
       "year": "嗨，2013年3月",
@@ -258,12 +263,17 @@
     {
       "year": "2013年7月通过",
       "title": "产能扩大",
-      "desc": "对新生产线和先进设备进行了大量投资。制造产能大幅提升，以满足不断增长的国际订单量。"
+      "desc": "对新生产线和先进设备的重大投资。制造能力大幅提升，以满足不断增长的国际订单量。"
     },
     {
       "year": "2024",
       "title": "获得ISO 9001认证",
-      "desc": "成功完成ISO 9001：2015质量管理体系认证。全面质量文档和持续改进系统正式建立。"
+      "desc": "成功完成ISO 9001：2015质量管理体系认证。完善高质量文档和持续改进系统。"
+    },
+    {
+      "year": "测试1",
+      "title": "测试2",
+      "desc": "测试3"
     }
   ],
   "milestones_vi": [
@@ -291,6 +301,11 @@
       "year": "2024",
       "title": "Đạt chứng nhận ISO 9001",
       "desc": "Hoàn thành thành công chứng nhận hệ thống quản lý chất lượng ISO 9001:2015. Tài liệu chất lượng đầy đủ và hệ thống cải tiến liên tục được chính thức hóa."
+    },
+    {
+      "year": "Thử nghiệm 1",
+      "title": "Thử nghiệm 2",
+      "desc": "Thử nghiệm 3"
     }
   ],
   "milestones_tl": [
@@ -302,7 +317,7 @@
     {
       "year": "10Oktubre 2012",
       "title": "Unang Internasyonal na Kliyente - Canton Fair",
-      "desc": "Lumahok sa Canton Fair sa kauna-unahang pagkakataon. Matagumpay na itinatag ang pakikipagsosyo sa mga mamimili sa ibang bansa mula sa Timog-silangang Asya, Gitnang Silangan, at Europa."
+      "desc": "Sa kauna-unahang pagkakataon ay sumali siya sa Canton Fair. Matagumpay na itinatag ang pakikipagsosyo sa mga mamimili sa ibang bansa mula sa Timog-silangang Asya, Gitnang Silangan, at Europa."
     },
     {
       "year": "hi Marso 2013",
@@ -317,7 +332,12 @@
     {
       "year": "2024",
       "title": "Nakamit ang sertipikasyon ng ISO 9001",
-      "desc": "Matagumpay na nakumpleto ang sertipikasyon ng sistema ng pamamahala ng kalidad ng ISO 9001: 2015. Pormal na pormal na dokumentasyon ng kalidad at patuloy na mga sistema ng pagpapabuti."
+      "desc": "Matagumpay na nakumpleto ang sertipikasyon ng sistema ng pamamahala ng kalidad ng ISO 9001: 2015. Pormal na pormal na dokumentasyon ang buong kalidad at patuloy na mga sistema ng pagpapabuti."
+    },
+    {
+      "year": "Pagsubok 1",
+      "title": "Pagsubok 2",
+      "desc": "Pagsubok 3"
     }
   ],
   "capacity_cards_zh": [

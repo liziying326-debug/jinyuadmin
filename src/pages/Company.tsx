@@ -132,30 +132,32 @@ const defaultAboutData = (): AboutData => ({
 // ========== 组件 ==========
 
 // 多行文本输入
-function TextField({ label, value, onChange }: { label?: string; value: string; onChange: (v: string) => void }) {
+function TextField({ label, value, onChange, disabled }: { label?: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   return (
     <div>
       {label && <label className="block text-xs font-semibold text-gray-500 mb-1">{label}</label>}
       <textarea
         rows={2}
         value={value}
+        disabled={disabled}
         onChange={e => onChange(e.target.value)}
-        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+        className={`w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
       />
     </div>
   );
 }
 
 // 单行文本输入
-function TextInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function TextInput({ label, value, onChange, disabled }: { label: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   return (
     <div>
       <label className="block text-sm font-semibold text-gray-900 mb-1.5">{label}</label>
       <input
         type="text"
         value={value}
+        disabled={disabled}
         onChange={e => onChange(e.target.value)}
-        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500"
+        className={`w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
       />
     </div>
   );
@@ -252,7 +254,7 @@ export default function Company() {
           };
           loadedData.milestones = parseArray(loadedData.milestones, 10).map(cleanLangFields);
           loadedData.factory_images = parseArray(loadedData.factory_images, 4);
-          loadedData.capacity_cards = parseArray(loadedData.capacity_cards, 6).map(cleanLangFields);
+          loadedData.capacity_cards = parseArray(loadedData.capacity_cards).map(cleanLangFields);
           loadedData.certifications = parseArray(loadedData.certifications);
           loadedData.team_members = parseArray(loadedData.team_members);
           setData({ ...def, ...loadedData });
@@ -483,6 +485,10 @@ export default function Company() {
                           <div className="flex items-center gap-2">
                             <label className="relative inline-flex items-center cursor-pointer">
                               <input type="checkbox" checked={isActive} onChange={(e) => {
+                                if (e.target.checked && activeCards.length >= 6) {
+                                  showToast('最多只能启用 6 张卡片，请先关闭部分卡片');
+                                  return;
+                                }
                                 const arr = [...data.capacity_cards];
                                 arr[idx] = { ...arr[idx], is_active: e.target.checked };
                                 setField('capacity_cards', arr);
