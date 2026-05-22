@@ -5,9 +5,24 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import multer from 'multer';
 import { createRequire } from 'module';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const require = createRequire(import.meta.url);
 const db = require('./database.cjs');
+
+let minioClient, uploadToMinIO, deleteFromMinIO;
+try {
+  const minioModule = await import('./minio-config.js');
+  minioClient = minioModule.minioClient;
+  uploadToMinIO = minioModule.uploadToMinIO;
+  deleteFromMinIO = minioModule.deleteFromMinIO;
+  minioModule.ensureBucket();
+  console.log('[MinIO] Client initialized');
+} catch (error) {
+  console.warn('[MinIO] Failed to initialize, using local storage:', error.message);
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -2452,12 +2467,21 @@ app.get('/api/case-studies', (req, res) => {
   res.json({ success: true, data: cases });
 });
 
-// ============ 视频上传接口 ============
+// ============ 视频上传接口（使用 MinIO） ============
 
-app.post('/api/upload/video', uploadVideo.single('video'), (req, res) => {
+app.post('/api/upload/video', uploadVideo.single('video'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, error: '未检测到视频文件' });
   }
+
+  if (uploadToMinIO) {
+    const result = await uploadToMinIO(req.file.buffer, req.file.originalname, req.file.mimetype);
+    if (result.success) {
+      return res.json({ success: true, url: result.url, filename: result.filename });
+    }
+    console.error('[Video Upload] MinIO upload failed, falling back to local:', result.error);
+  }
+
   const url = `/case-uploads/${req.file.filename}`;
   res.json({ success: true, url });
 });
@@ -3344,9 +3368,18 @@ app.put('/api/about', (req, res) => {
   });
 });
 
-// About 图片上传
-app.post('/api/about/upload', upload.single('image'), (req, res) => {
+// About 图片上传（使用 MinIO）
+app.post('/api/about/upload', upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+  if (uploadToMinIO) {
+    const result = await uploadToMinIO(req.file.buffer, req.file.originalname, req.file.mimetype);
+    if (result.success) {
+      return res.json({ success: true, url: result.url, filename: result.filename });
+    }
+    console.error('[Upload] MinIO upload failed, falling back to local:', result.error);
+  }
+
   res.json({ success: true, url: `/about-uploads/${req.file.filename}` });
 });
 

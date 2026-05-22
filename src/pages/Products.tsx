@@ -63,6 +63,32 @@ export default function Products() {
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  // 产品图片上传处理（使用 MinIO）
+  const handleProductImageUpload = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/about/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+      if (result.url) {
+        setProductImages(prev => [...prev, result.url]);
+        showToast('图片已上传');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      showToast('图片上传失败');
+    }
+  };
+
   // 加载产品和分类
   React.useEffect(() => {
     async function fetchAll() {
@@ -443,12 +469,7 @@ export default function Products() {
                     e.stopPropagation();
                     const file = e.dataTransfer.files?.[0];
                     if (file && file.type.startsWith('image/')) {
-                      const reader = new FileReader();
-                      reader.onload = (ev) => {
-                        setProductImages(prev => [...prev, ev.target?.result as string]);
-                        showToast('图片已上传');
-                      };
-                      reader.readAsDataURL(file);
+                      handleProductImageUpload(file);
                     }
                   }}
                   className="aspect-square flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-xl transition-colors bg-gray-50 hover:border-blue-500 cursor-pointer hover:bg-blue-50/50 group"
@@ -462,12 +483,7 @@ export default function Products() {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                          setProductImages(prev => [...prev, ev.target?.result as string]);
-                          showToast('图片已上传');
-                        };
-                        reader.readAsDataURL(file);
+                        handleProductImageUpload(file);
                       }
                       e.target.value = '';
                     }}

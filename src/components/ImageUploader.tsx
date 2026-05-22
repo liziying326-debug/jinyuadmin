@@ -9,6 +9,7 @@ interface ImageUploaderProps {
   label?: string;
   /** 是否显示"第一张为主图"标记 */
   showPrimary?: boolean;
+  uploadEndpoint?: string;
 }
 
 export default function ImageUploader({
@@ -18,13 +19,37 @@ export default function ImageUploader({
   disabled = false,
   label = '图片',
   showPrimary = true,
+  uploadEndpoint = '/api/about/upload',
 }: ImageUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const uploadToServer = async (file: File): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(uploadEndpoint, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+      return result.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      return null;
+    }
+  };
 
   // 批量处理文件（支持同时选多张）
   const handleFiles = useCallback(
-    (files: FileList | File[]) => {
+    async (files: FileList | File[]) => {
       const remaining = max - images.length;
       if (remaining <= 0 || disabled) return;
 
@@ -34,18 +59,19 @@ export default function ImageUploader({
 
       if (fileArr.length === 0) return;
 
-      const promises = fileArr.map(
-        (file) =>
-          new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => resolve(ev.target?.result as string);
-            reader.readAsDataURL(file);
-          })
-      );
-
-      Promise.all(promises).then((newBase64s) => {
-        onChange([...images, ...newBase64s]);
-      });
+      setIsUploading(true);
+      try {
+        const urls = [];
+        for (const file of fileArr) {
+          const url = await uploadToServer(file);
+          if (url) {
+            urls.push(url);
+          }
+        }
+        onChange([...images, ...urls]);
+      } finally {
+        setIsUploading(false);
+      }
     },
     [images, max, disabled, onChange]
   );
@@ -157,17 +183,17 @@ export default function ImageUploader({
             role="button"
             tabIndex={0}
             aria-label="上传图片"
-            onClick={() => fileInputRef.current?.click()}
-            onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
+            onClick={() => !isUploading && fileInputRef.current?.click()}
+            onKeyDown={(e) => e.key === 'Enter' && !isUploading && fileInputRef.current?.click()}
             onDragEnter={onDragEnter}
             onDragLeave={onDragLeave}
             onDragOver={onDragOver}
             onDrop={onDrop}
-            className={`aspect-square flex flex-col items-center justify-center rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 select-none
-              ${
+            className={`aspect-square flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 select-none
+              ${isUploading ? 'border-blue-300 bg-blue-50 cursor-wait' :
                 isDragOver
-                  ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-md'
-                  : 'border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50/40'
+                  ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-md cursor-pointer'
+                  : 'border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50/40 cursor-pointer'
               }`}
           >
             <input
@@ -181,6 +207,7 @@ export default function ImageUploader({
                 if (e.target.files) handleFiles(e.target.files);
                 e.target.value = '';
               }}
+              disabled={isUploading}
             />
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center border mb-1.5 transition-colors
@@ -190,18 +217,22 @@ export default function ImageUploader({
                     : 'bg-white border-gray-200 group-hover:border-blue-200'
                 }`}
             >
-              <Upload
-                className={`h-4 w-4 transition-colors ${isDragOver ? 'text-blue-600' : 'text-gray-400'}`}
-              />
+              {isUploading ? (
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Upload
+                  className={`h-4 w-4 transition-colors ${isDragOver ? 'text-blue-600' : 'text-gray-400'}`}
+                />
+              )}
             </div>
             <span
               className={`text-[11px] font-medium transition-colors ${
-                isDragOver ? 'text-blue-600' : 'text-gray-400'
+                isUploading ? 'text-blue-600' : isDragOver ? 'text-blue-600' : 'text-gray-400'
               }`}
             >
-              {isDragOver ? '松开上传' : '点击或拖拽'}
+              {isUploading ? '上传中...' : isDragOver ? '松开上传' : '点击或拖拽'}
             </span>
-            {images.length === 0 && (
+            {images.length === 0 && !isUploading && (
               <span className="text-[10px] text-gray-300 mt-0.5">支持批量上传</span>
             )}
           </div>
