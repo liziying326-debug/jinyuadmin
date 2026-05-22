@@ -1,79 +1,5 @@
 [
   {
-    "id": 3,
-    "name": "cc",
-    "desc": "dd",
-    "slug": "digital-printing",
-    "image": "",
-    "images": [],
-    "langData": {
-      "en": {
-        "name": "cc",
-        "desc": "dd"
-      },
-      "zh": {
-        "name": "",
-        "desc": ""
-      },
-      "vi": {
-        "name": "",
-        "desc": ""
-      },
-      "ph": {
-        "name": "",
-        "desc": ""
-      }
-    },
-    "materials": [
-      {
-        "id": "1778923301976",
-        "name": "ddd",
-        "desc": "eee",
-        "langData": {
-          "en": {
-            "name": "ddd",
-            "desc": "eee"
-          },
-          "zh": {
-            "name": "",
-            "desc": ""
-          },
-          "vi": {
-            "name": "",
-            "desc": ""
-          },
-          "ph": {
-            "name": "",
-            "desc": ""
-          }
-        }
-      },
-      {
-        "id": "1778923241312",
-        "name": "test",
-        "desc": "test",
-        "langData": {
-          "en": {
-            "name": "test",
-            "desc": "test"
-          },
-          "zh": {
-            "name": "",
-            "desc": ""
-          },
-          "vi": {
-            "name": "",
-            "desc": ""
-          },
-          "ph": {
-            "name": "",
-            "desc": ""
-          }
-        }
-      }
-    ]
-  },
-  {
     "id": 4,
     "name": "title",
     "desc": "context",
@@ -190,33 +116,6 @@
       "en": {
         "name": "1234t12",
         "desc": "123"
-      },
-      "zh": {
-        "name": "",
-        "desc": ""
-      },
-      "vi": {
-        "name": "",
-        "desc": ""
-      },
-      "ph": {
-        "name": "",
-        "desc": ""
-      }
-    },
-    "materials": []
-  },
-  {
-    "id": 3,
-    "name": "cc",
-    "desc": "dd",
-    "slug": "",
-    "image": "",
-    "images": [],
-    "langData": {
-      "en": {
-        "name": "cc",
-        "desc": "dd"
       },
       "zh": {
         "name": "",

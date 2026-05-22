@@ -11,15 +11,54 @@ const path = require('path');
 const dbPath = path.join(__dirname, 'data', 'jinyu.db');
 console.log('[DB] 数据库路径:', dbPath);
 
+// 安全执行数据库操作的辅助函数
+function safeDbPrepare(sql) {
+  if (!db) {
+    throw new Error('数据库连接未初始化');
+  }
+  return db.prepare(sql);
+}
+
 let db = null;
-if (Database) {
+let dbInitAttempts = 0;
+const MAX_INIT_ATTEMPTS = 3;
+
+function initDatabase() {
+  if (!Database) return false;
+  
   try {
+    // 检查是否有旧的 WAL 文件需要清理
+    const fs = require('fs');
+    const walPath = dbPath + '-wal';
+    const shmPath = dbPath + '-shm';
+    
+    try {
+      if (fs.existsSync(walPath)) fs.unlinkSync(walPath);
+      if (fs.existsSync(shmPath)) fs.unlinkSync(shmPath);
+    } catch (e) {
+      console.warn('[DB] 清理 WAL 文件失败:', e.message);
+    }
+    
     db = new Database(dbPath);
-    // 启用 WAL 模式（提升并发性能）
     db.pragma('journal_mode = WAL');
+    db.pragma('busy_timeout = 5000');
+    console.log('[DB] 数据库连接成功');
+    return true;
   } catch (e) {
-    console.error('[DB] 数据库连接失败，将使用 JSON 文件模式：', e.message);
+    console.error('[DB] 数据库连接失败:', e.message);
     db = null;
+    return false;
+  }
+}
+
+// 尝试初始化数据库
+while (dbInitAttempts < MAX_INIT_ATTEMPTS && !db) {
+  if (initDatabase()) break;
+  dbInitAttempts++;
+  if (dbInitAttempts < MAX_INIT_ATTEMPTS) {
+    console.log(`[DB] 重试初始化 (${dbInitAttempts}/${MAX_INIT_ATTEMPTS})...`);
+    const { execSync } = require('child_process');
+    execSync('timeout /t 1 /nobreak > nul', { stdio: 'ignore', windowsHide: true });
   }
 }
 
@@ -66,6 +105,17 @@ if (db) {
       description_tl TEXT
     )
   `).run();
+  
+  // 创建 products 表的索引（如果不存在）
+  try {
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_products_status ON products(status)').run();
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)').run();
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_products_created ON products(created_at DESC)').run();
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_products_name ON products(name_en)').run();
+    console.log('[DB] Products 表索引创建成功');
+  } catch (e) {
+    console.warn('[DB] 创建索引失败:', e.message);
+  }
 
   // 创建 news 表（如果不存在）
   db.prepare(`
@@ -252,5 +302,8 @@ if (db) {
     )
   `).run();
 }
+
+// 导出前记录状态
+console.log('[DB] 导出 db 对象，db type:', typeof db, '| db is null:', db === null);
 
 module.exports = db;

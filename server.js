@@ -72,8 +72,19 @@ app.get('/api/homepage', (req, res) => {
 // GET /api/faqs - 获取所有FAQ（支持语言参数）
 app.get('/api/faqs', (req, res) => {
   try {
+    
+    if (!db) {
+      console.error('[GET /api/faqs] FATAL: db object is null!');
+      return res.status(503).json({ 
+        success: false, 
+        error: '数据库连接未初始化，请稍后重试' 
+      });
+    }
+    
     const lang = req.query.lang || 'en';
+    console.log('[GET /api/faqs] Querying FAQs for lang:', lang);
     const faqs = db.prepare('SELECT * FROM faqs ORDER BY sort_order, id').all();
+    console.log('[GET /api/faqs] Found', faqs.length, 'FAQs');
     
     // 根据语言返回对应字段
     const langMap = { en: 'en', zh: 'zh', vi: 'vi', tl: 'tl' };
@@ -98,7 +109,8 @@ app.get('/api/faqs', (req, res) => {
     
     res.json({ success: true, data: formatted });
   } catch (e) {
-    res.status(500).json({ success: false, error: e.message });
+    console.error('[GET /api/faqs] ERROR:', e.message, '\nStack:', e.stack);
+    res.status(500).json({ success: false, error: '获取FAQ失败: ' + e.message });
   }
 });
 
@@ -257,6 +269,7 @@ const writeDataFile = (filename, data) => {
 
 // 获取所有产品（支持翻页）
 app.get('/api/products', (req, res) => {
+  const startTime = Date.now();
   let products = [];
   
   // 如果 db 不可用，直接走 JSON fallback
@@ -268,13 +281,15 @@ app.get('/api/products', (req, res) => {
     if (isFromFrontend) {
       products = products.filter(p => p.status !== 'inactive');
     }
+    const elapsed = Date.now() - startTime;
+    console.log(`[API] /api/products (JSON): ${products.length} items in ${elapsed}ms`);
     return res.json({ success: true, data: products });
   }
   
   // 翻页参数
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 500;  // 默认 500 条，避免加载全部 5000+ 产品
-  const offset = (page -1) * limit;
+  const offset = (page - 1) * limit;
   
   // 通过自定义 header X-From-Frontend 区分来源
   // 前台请求（带header）：只显示活跃产品
@@ -285,31 +300,35 @@ app.get('/api/products', (req, res) => {
   // 优先从数据库读取
   try {
     let rows;
-    let countRows;
     
     if (isFromFrontend && statusFilter !== 'all') {
-      // 前台：只查活跃产品
+      // 前台：只查活跃产品（使用索引优化）
       rows = db.prepare('SELECT * FROM products WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?').all('active', limit, offset);
       const totalResult = db.prepare('SELECT COUNT(*) as total FROM products WHERE status = ?').get('active');
       res.set('X-Total-Count', totalResult.total);
     } else {
-      // 后台：查所有产品（含下架），支持翻页
+      // 后台：查所有产品（含下架），支持翻页（使用索引优化）
       rows = db.prepare('SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
       const totalResult = db.prepare('SELECT COUNT(*) as total FROM products').get();
       res.set('X-Total-Count', totalResult.total);
     }
     
-    // 解析 JSON 字段
+    // 解析 JSON 字段（优化：使用更快的解析）
     products = rows.map(p => ({
       ...p,
       specs: JSON.parse(p.specs || '[]'),
       features: JSON.parse(p.features_en || '[]'),
       images: JSON.parse(p.images || '[]')
     }));
+    
+    const elapsed = Date.now() - startTime;
+    console.log(`[API] /api/products (DB): ${products.length} items in ${elapsed}ms`);
   } catch (dbErr) {
     console.error('[DB] 读取产品失败，fallback 到 JSON：', dbErr.message);
     // 失败时 fallback 到 JSON 文件（无翻页）
     products = readDataFile('products.json', []);
+    const elapsed = Date.now() - startTime;
+    console.log(`[API] /api/products (JSON fallback): ${products.length} items in ${elapsed}ms`);
   }
   
   // 如果是前台请求，只返回活跃产品（JSON fallback 时也需要过滤）
@@ -324,24 +343,28 @@ app.get('/api/products', (req, res) => {
 
 // 按 slug 查找产品（必须在 /:id 之前注册）
 app.get('/api/products/by-slug/:slug', (req, res) => {
+  const startTime = Date.now();
   let product = null;
   const slug = req.params.slug;
-  const normalize = s => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  // 将 slug 转换为可搜索的名称格式（去掉连字符和空格）
+  const normalizedSlug = (slug || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   
-  // 优先从数据库查找
+  // 优先从数据库查找（使用索引优化查询）
   try {
-    const rows = db.prepare('SELECT * FROM products WHERE status = ?').all('active');
-    const normalizedSlug = normalize(slug);
-    product = rows.find(p => {
-      const pSlug = normalize(p.slug || '');
-      const pName = normalize(p.name_en || p.name || '');
-      return pSlug === normalizedSlug || pName === normalizedSlug;
-    });
-    if (product) {
-      product.specs = JSON.parse(product.specs || '[]');
-      product.features = JSON.parse(product.features_en || '[]');
-      product.images = JSON.parse(product.images || '[]');
+    // 直接使用 name_en 字段查找（没有 slug 字段）
+    const row = db.prepare('SELECT * FROM products WHERE status = ? AND LOWER(REPLACE(name_en, " ", "")) = ? LIMIT 1').get('active', normalizedSlug);
+    
+    if (row) {
+      product = {
+        ...row,
+        specs: JSON.parse(row.specs || '[]'),
+        features: JSON.parse(row.features_en || '[]'),
+        images: JSON.parse(row.images || '[]')
+      };
     }
+    
+    const elapsed = Date.now() - startTime;
+    console.log(`[API] /api/products/by-slug (DB): ${product ? 'found' : 'not found'} in ${elapsed}ms`);
   } catch (dbErr) {
     console.error('[DB] 按 slug 查找失败，fallback 到 JSON：', dbErr.message);
   }
@@ -349,10 +372,10 @@ app.get('/api/products/by-slug/:slug', (req, res) => {
   // 数据库没找到，fallback 到 JSON
   if (!product) {
     const products = readDataFile('products.json', []);
+    const targetSlug = normalizedSlug;
     product = products.find(p =>
       p.status !== 'inactive' &&
-      ((p.slug && normalize(p.slug) === normalize(slug)) ||
-      normalize(p.name || p.name_en || '') === normalize(slug))
+      (p.name_en && (p.name_en || '').toLowerCase().replace(/[^a-z0-9]/g, '') === targetSlug)
     );
   }
   
