@@ -17,7 +17,7 @@ import FAQ from './pages/FAQ';
 import Account from './pages/Account';
 import SocialLinks from './pages/SocialLinks';
 import Login from './pages/Login';
-import { authApi } from './api';
+import { authApi, setToken, clearToken } from './api';
 
 const AUTH_KEY = 'jinyu_material_current_user';
 
@@ -244,6 +244,7 @@ export default function App() {
     try {
       const result = await authApi.login(username, password);
       if (result.success && result.user) {
+        setToken(result.token);
         localStorage.setItem(AUTH_KEY, username);
         setIsLoggedIn(true);
         setCurrentUser(username);
@@ -257,6 +258,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    clearToken();
     localStorage.removeItem(AUTH_KEY);
     setIsLoggedIn(false);
     setCurrentUser('');

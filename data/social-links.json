@@ -22,5 +22,13 @@
     "url": "https://wa.me/8613808828019",
     "sort_order": 3,
     "enabled": true
+  },
+  {
+    "id": 4,
+    "name": "Instagram",
+    "icon": "instagram",
+    "url": "",
+    "sort_order": 4,
+    "enabled": true
   }
 ]

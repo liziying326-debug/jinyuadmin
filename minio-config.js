@@ -1,4 +1,4 @@
-import Minio from 'minio';
+import * as Minio from 'minio';
 
 const minioClient = new Minio.Client({
   endPoint: process.env.MINIO_ENDPOINT || 'localhost',
@@ -16,39 +16,27 @@ async function ensureBucket() {
     if (!exists) {
       await minioClient.makeBucket(BUCKET_NAME);
       console.log(`[MinIO] Bucket "${BUCKET_NAME}" created successfully`);
-
-      await setBucketPolicy();
-    } else {
-      await setBucketPolicy();
     }
-  } catch (error) {
-    console.error('[MinIO] Error ensuring bucket:', error.message);
-  }
-}
 
-async function setBucketPolicy() {
-  try {
     const policy = {
       Version: '2012-10-17',
-      Statement: [
-        {
-          Sid: 'PublicRead',
-          Effect: 'Allow',
-          Principal: { AWS: ['*'] },
-          Action: ['s3:GetObject'],
-          Resource: [`arn:aws:s3:::${BUCKET_NAME}/*`]
-        }
-      ]
+      Statement: [{
+        Sid: 'PublicRead',
+        Effect: 'Allow',
+        Principal: { AWS: ['*'] },
+        Action: ['s3:GetObject'],
+        Resource: [`arn:aws:s3:::${BUCKET_NAME}/*`]
+      }]
     };
 
     await minioClient.setBucketPolicy(BUCKET_NAME, JSON.stringify(policy));
     console.log(`[MinIO] Bucket policy set to public read`);
   } catch (error) {
-    console.error('[MinIO] Error setting bucket policy:', error.message);
+    console.error('[MinIO] Error ensuring bucket:', error.message);
   }
 }
 
-export async function uploadToMinIO(fileBuffer, filename, mimetype) {
+async function uploadToMinIO(fileBuffer, filename, mimetype) {
   const timestamp = Date.now();
   const uniqueFilename = `${timestamp}-${filename}`;
 
@@ -60,21 +48,14 @@ export async function uploadToMinIO(fileBuffer, filename, mimetype) {
     const port = process.env.MINIO_PORT || '9000';
     const publicUrl = `${protocol}://${endpoint}:${port}/${BUCKET_NAME}/${uniqueFilename}`;
 
-    return {
-      success: true,
-      url: publicUrl,
-      filename: uniqueFilename,
-    };
+    return { success: true, url: publicUrl, filename: uniqueFilename };
   } catch (error) {
     console.error('[MinIO] Upload error:', error.message);
-    return {
-      success: false,
-      error: error.message,
-    };
+    return { success: false, error: error.message };
   }
 }
 
-export async function deleteFromMinIO(filename) {
+async function deleteFromMinIO(filename) {
   try {
     await minioClient.removeObject(BUCKET_NAME, filename);
     return { success: true };
@@ -84,5 +65,13 @@ export async function deleteFromMinIO(filename) {
   }
 }
 
-export { minioClient, BUCKET_NAME };
-export default minioClient;
+const minioModule = {
+  minioClient,
+  uploadToMinIO,
+  deleteFromMinIO,
+  ensureBucket,
+  BUCKET_NAME
+};
+
+export default minioModule;
+export { minioClient, uploadToMinIO, deleteFromMinIO, ensureBucket, BUCKET_NAME };

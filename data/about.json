@@ -3,7 +3,7 @@
   "intro_desc": "Intro Description3",
   "business_desc": "Business Description4",
   "export_desc": "Export Description5",
-  "company_image": "/about-uploads/1775904662551-0auwzn.jpg",
+  "company_image": "/about-uploads/1779722453261-7vdw3p.jpg",
   "mission": "Mission6",
   "vision": "Vision7",
   "values": "Values8",
@@ -13,10 +13,10 @@
   "product_lines": "16",
   "export_markets": "17",
   "contact_email": "vivian@materials-ad.com",
-  "timeline_image": "/about-uploads/1775904755237-9xms00.png",
+  "timeline_image": "/about-uploads/1779722496518-bp5gbl.jpg",
   "milestones": [
     {
-      "year": "92009 · Year 12",
+      "year": "2009 · Year 12",
       "title": "Company Established",
       "desc": "Foshan Jin Yu Advertising Material Co., Ltd officially founded in Nanhai District, Foshan. Initial product range focused on PVC foam board and self adhesive vinyl for domestic market supply."
     },
@@ -48,28 +48,28 @@
   ],
   "factory_images": [
     {
-      "url": "/about-uploads/1775904813370-906jva.jpg",
+      "url": "/about-uploads/1779722499499-prs9xo.jpg",
       "alt": "11Factory Exterior",
       "alt_zh": "工厂外观",
       "alt_vi": "Ngoại thất nhà máy",
       "alt_tl": "Panlabas na Pabrika"
     },
     {
-      "url": "/about-uploads/1775904827964-56znyf.jpg",
+      "url": "/about-uploads/1779722502025-6o4t62.jpg",
       "alt": "12Production Line",
       "alt_zh": "生产线",
       "alt_vi": "Dây chuyền sản xuất",
       "alt_tl": "Linya ng Produksyon"
     },
     {
-      "url": "/about-uploads/1775904839941-3px3ni.jpg",
+      "url": "/about-uploads/1779722506065-4e1rj3.jpg",
       "alt": "13Equipment",
       "alt_zh": "装备",
       "alt_vi": "Trang thiết bị",
       "alt_tl": "Kagamitan"
     },
     {
-      "url": "/about-uploads/1775904853926-54earc.jpg",
+      "url": "/about-uploads/1779722508711-mjnz5b.jpg",
       "alt": "14Quality Control",
       "alt_zh": "质量控制",
       "alt_vi": "Kiểm soát chất lượng",
@@ -120,7 +120,7 @@
       "name": "15Vivian1",
       "role": "Export Sales Manager",
       "desc": "International B2B sales, client relations and export documentation. Direct contact for all international enquiries.",
-      "photo": "/about-uploads/1776012229059-x889gh.jpg",
+      "photo": "/about-uploads/1779722763225-spbgir.jpg",
       "color": "#2563eb",
       "initial": "V",
       "email": "vivian@materials-ad.com",
@@ -139,7 +139,7 @@
       "name": "R&D Department",
       "role": "Technical Development Team",
       "desc": "Product innovation, custom formulation, quality control, and technical documentation for international compliance.",
-      "photo": "",
+      "photo": "/about-uploads/1779722768691-42a4b7.jpg",
       "color": "#E8751A",
       "initial": "R",
       "email": "",
@@ -171,44 +171,6 @@
       "name_tl": "Koponan ng Produksyon",
       "role_tl": "Pagmamanupaktura at QC",
       "desc_tl": "Nakaranas ng mga manggagawa sa produksyon na nagpapatakbo ng aming pinalawak na pasilidad sa pagmamanupaktura na may mga pamamaraan sa kalidad ng ISO 9001."
-    },
-    {
-      "visible": true,
-      "name": "HUGO",
-      "role": "Founder & General Manager",
-      "desc": "With decades of experience in the advertising materials industry, he leads the company’s overall strategy, product development and quality management. He focuses on stable product performance and global market expansion, dedicated to offering cost-effective and reliable advertising material solutions for Southeast Asian partners.",
-      "photo": "/about-uploads/1776683722271-yygqqo.jpg",
-      "color": "#eb7324",
-      "initial": "?",
-      "email": "",
-      "name_zh": "雨果",
-      "role_zh": "创始人兼总经理",
-      "desc_zh": "凭借数十年广告材料行业经验，他领导公司的整体战略、产品开发和质量管理。他专注于稳定的产品表现和全球市场拓展，致力于为东南亚合作伙伴提供经济且可靠的广告材料解决方案。",
-      "name_vi": "HUGO",
-      "role_vi": "Người sáng lập & Tổng giám đốc",
-      "desc_vi": "Với nhiều thập kỷ kinh nghiệm trong ngành tài liệu quảng cáo, ông dẫn dắt chiến lược tổng thể, phát triển sản phẩm và quản lý chất lượng của công ty. Ông tập trung vào hiệu suất sản phẩm ổn định và mở rộng thị trường toàn cầu, chuyên cung cấp các giải pháp tài liệu quảng cáo đáng tin cậy và hiệu quả về chi phí cho các đối tác Đông Nam Á.",
-      "name_tl": "HUGO",
-      "role_tl": "Tagapagtatag at Pangkalahatang Tagapamahala",
-      "desc_tl": "Sa mga dekada ng karanasan sa industriya ng mga materyales sa advertising, pinamumunuan niya ang pangkalahatang diskarte ng kumpanya, pag-unlad ng produkto at pamamahala ng kalidad. Nakatuon siya sa matatag na pagganap ng produkto at pagpapalawak ng pandaigdigang merkado, na nakatuon sa pag-aalok ng cost-effective at maaasahang mga solusyon sa materyal na advertising para sa mga kasosyo sa Timog-silangang Asya."
-    },
-    {
-      "visible": true,
-      "name": "Jckie",
-      "role": " Quality Control Manager",
-      "desc": "In charge of production management and full-process quality inspection. Strictly controls raw materials, production processes and finished product testing to ensure every batch of goods meets export quality standards.",
-      "photo": "/about-uploads/1777887200041-eu7ssy.jpg",
-      "color": "#2563eb",
-      "initial": "J",
-      "email": "",
-      "name_zh": "杰基",
-      "role_zh": "质量控制经理",
-      "desc_zh": "负责生产管理和全流程质量检查。严格管控原材料、生产工艺和成品检测，确保每批商品都符合出口质量标准。",
-      "name_vi": "Jckie",
-      "role_vi": "Giám đốc kiểm soát chất lượng",
-      "desc_vi": "Phụ trách quản lý sản xuất và kiểm tra chất lượng toàn bộ. Kiểm soát chặt chẽ nguyên liệu, quy trình sản xuất và kiểm tra thành phẩm để đảm bảo mọi lô hàng đều đạt tiêu chuẩn chất lượng xuất khẩu.",
-      "name_tl": "Jckie",
-      "role_tl": "Tagapamahala ng Kontrol sa Kalidad",
-      "desc_tl": "Namamahala sa pamamahala ng produksyon at inspeksyon ng kalidad ng buong proseso. Mahigpit na kinokontrol ang mga hilaw na materyales, proseso ng produksyon at natapos na pagsubok ng produkto upang matiyak na ang bawat batch ng mga kalakal ay nakakatugon sa mga pamantayan sa kalidad ng pag-export."
     }
   ],
   "intro_title_zh": "介绍 第二标题",
@@ -246,7 +208,7 @@
   "contact_email_tl": "vivian@materials-ad.com",
   "milestones_zh": [
     {
-      "year": "92009 ·12年级",
+      "year": "2009 ·12年级",
       "title": "公司成立",
       "desc": "佛山金宇广告材料有限公司正式成立于佛山南海区。最初的产品线主要集中在国内市场供应的PVC泡沫板和自粘乙烯基。"
     },
@@ -278,7 +240,7 @@
   ],
   "milestones_vi": [
     {
-      "year": "92009 · Lớp 12",
+      "year": "2009 · Lớp 12",
       "title": "Công ty được thành lập",
       "desc": "Công ty TNHH Vật liệu Quảng cáo Phật Sơn Jin Yu chính thức được thành lập tại quận Nam Hải, Phật Sơn. Phạm vi sản phẩm ban đầu tập trung vào tấm xốp PVC và vinyl tự dính để cung cấp cho thị trường trong nước."
     },
@@ -310,7 +272,7 @@
   ],
   "milestones_tl": [
     {
-      "year": "92009 · Taon 12",
+      "year": "2009 · Taon 12",
       "title": "Itinatag ang Kumpanya",
       "desc": "Foshan Jin Yu Advertising Material Co., Ltd opisyal na itinatag sa Nanhai District, Foshan. Paunang hanay ng produkto na nakatuon sa PVC foam board at self adhesive vinyl para sa domestic market supply."
     },

@@ -1,4 +1,14 @@
 const API_BASE = '';
+const TOKEN_KEY = 'jinyu_material_token';
+
+// 获取存储的 JWT token
+function getToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
 
 interface ApiOptions {
   method?: string;
@@ -20,11 +30,25 @@ export async function api<T = any>(
     },
   };
 
+  // 自动附加 JWT token
+  const token = getToken();
+  if (token) {
+    (config.headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+  }
+
   if (body) {
     config.body = JSON.stringify(body);
   }
 
   const response = await fetch(`${API_BASE}${endpoint}`, config);
+  
+  // 401 时自动清除过期 token
+  if (response.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('jinyu_material_current_user');
+    window.location.reload();
+    throw new Error('登录已过期');
+  }
   
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Request failed' }));
@@ -32,6 +56,15 @@ export async function api<T = any>(
   }
 
   return response.json();
+}
+
+// 导出 token 操作函数，供 App.tsx 使用
+export function setToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
 }
 
 // ============ 产品 API ============

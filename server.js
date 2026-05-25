@@ -6,6 +6,7 @@ import { dirname, join } from 'path';
 import multer from 'multer';
 import { createRequire } from 'module';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -41,6 +42,53 @@ app.use(cors());
 // 设置 body size limit 为 10MB，支持图片 base64
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ========== JWT 认证中间件 ==========
+
+const JWT_SECRET = process.env.JWT_SECRET || 'jinyu_material_prod_secret_2026';
+const TOKEN_EXPIRY = '24h';
+
+function authMiddleware(req, res, next) {
+  // 公开路由跳过认证
+  if (req.method === 'GET') return next();
+  if (req.path === '/api/contact' && req.method === 'POST') return next(); // 用户联系表单
+  if (req.path === '/api/auth/login') return next();
+  if (req.path === '/api/auth/register') return next(); // 注册（首次创建管理员账号）
+  
+  // 检查 JWT
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, error: '未登录' });
+  }
+  try {
+    const token = authHeader.split(' ')[1];
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, error: '登录已过期，请重新登录' });
+  }
+}
+
+// 登录频率限制（简单内存版，防暴力破解）
+const loginAttempts = new Map();
+function checkLoginRate(req, res, next) {
+  const ip = req.ip || req.connection.remoteAddress;
+  const now = Date.now();
+  const record = loginAttempts.get(ip) || { count: 0, firstAt: now };
+  if (now - record.firstAt > 15 * 60 * 1000) {
+    record.count = 0;
+    record.firstAt = now;
+  }
+  if (record.count >= 10) {
+    return res.status(429).json({ success: false, error: '登录过于频繁，请15分钟后再试' });
+  }
+  record.count++;
+  loginAttempts.set(ip, record);
+  next();
+}
+
+// 全局应用认证中间件（白名单模式：GET + 联系表单 + 登录/注册 公开）
+app.use(authMiddleware);
 
 // ========== Homepage API（首页综合数据） ==========
 app.get('/api/homepage', (req, res) => {
@@ -235,15 +283,26 @@ try { mkdirSync(CASE_UPLOADS_DIR, { recursive: true }); } catch {}
 const PRODUCT_IMAGES_DIR = join(__dirname, 'product-images');
 try { mkdirSync(PRODUCT_IMAGES_DIR, { recursive: true }); } catch {}
 
-// Multer 配置（图片，10MB）
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
-  filename: (_req, file, cb) => {
-    const ext = file.originalname.split('.').pop();
-    cb(null, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`);
-  },
+// Multer 配置（图片，10MB）- 使用内存存储以便压缩
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } 
 });
-const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
+// 保存图片到本地磁盘的辅助函数
+async function saveImageToDisk(buffer, originalname) {
+  const ext = originalname.split('.').pop() || 'jpg';
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const filepath = join(UPLOADS_DIR, filename);
+  
+  try {
+    writeFileSync(filepath, buffer);
+    return filename;
+  } catch (error) {
+    console.error('[Upload] 保存图片到磁盘失败:', error.message);
+    return null;
+  }
+}
 
 // Multer 配置（视频，50MB）
 const videoStorage = multer.diskStorage({
@@ -254,6 +313,44 @@ const videoStorage = multer.diskStorage({
   },
 });
 const uploadVideo = multer({ storage: videoStorage, limits: { fileSize: 50 * 1024 * 1024 } });
+
+// 图片压缩函数
+let sharp;
+try {
+  sharp = require('sharp');
+  console.log('[Image] Sharp 图片压缩库已加载');
+} catch (e) {
+  console.warn('[Image] Sharp 未安装，图片将不会被压缩');
+}
+
+async function compressImage(inputBuffer, mimetype) {
+  if (!sharp) return inputBuffer;
+
+  try {
+    const image = sharp(inputBuffer);
+    const metadata = await image.metadata();
+
+    // 如果图片大于 2000px 等比例缩小
+    let targetWidth = metadata.width || 2000;
+    if (targetWidth > 2000) {
+      image.resize(2000, null, { withoutEnlargement: true });
+    }
+
+    // 根据格式设置质量
+    if (mimetype === 'image/jpeg' || mimetype === 'image/jpg') {
+      return await image.jpeg({ quality: 85 }).toBuffer();
+    } else if (mimetype === 'image/png') {
+      return await image.png({ quality: 85, compressionLevel: 6 }).toBuffer();
+    } else if (mimetype === 'image/webp') {
+      return await image.webp({ quality: 85 }).toBuffer();
+    }
+
+    return await image.toBuffer();
+  } catch (error) {
+    console.error('[Image] 压缩失败:', error.message);
+    return inputBuffer;
+  }
+}
 
 // 辅助函数：读取数据文件
 const readDataFile = (filename, defaultValue = []) => {
@@ -3368,19 +3465,36 @@ app.put('/api/about', (req, res) => {
   });
 });
 
-// About 图片上传（使用 MinIO）
+// About 图片上传（使用 MinIO + 压缩）
 app.post('/api/about/upload', upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
+  // 压缩图片
+  let fileBuffer = req.file.buffer;
+  let originalSize = fileBuffer.length;
+  if (sharp) {
+    fileBuffer = await compressImage(fileBuffer, req.file.mimetype);
+    const compressedSize = fileBuffer.length;
+    if (compressedSize < originalSize) {
+      console.log(`[Image] 压缩完成: ${(originalSize / 1024).toFixed(1)}KB -> ${(compressedSize / 1024).toFixed(1)}KB (节省 ${((1 - compressedSize / originalSize) * 100).toFixed(1)}%)`);
+    }
+  }
+
   if (uploadToMinIO) {
-    const result = await uploadToMinIO(req.file.buffer, req.file.originalname, req.file.mimetype);
+    const result = await uploadToMinIO(fileBuffer, req.file.originalname, req.file.mimetype);
     if (result.success) {
       return res.json({ success: true, url: result.url, filename: result.filename });
     }
     console.error('[Upload] MinIO upload failed, falling back to local:', result.error);
   }
 
-  res.json({ success: true, url: `/about-uploads/${req.file.filename}` });
+  // MinIO 不可用时，保存到本地磁盘
+  const localFilename = await saveImageToDisk(fileBuffer, req.file.originalname);
+  if (localFilename) {
+    res.json({ success: true, url: `/about-uploads/${localFilename}`, filename: localFilename });
+  } else {
+    res.status(500).json({ error: 'Failed to save image' });
+  }
 });
 
 // About 图片列表
@@ -3434,7 +3548,7 @@ app.get('/api/auth', (req, res) => {
   res.json(safeAccounts);
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', checkLoginRate, (req, res) => {
   const { username, password } = req.body;
   
   // 优先从数据库查找
@@ -3442,7 +3556,8 @@ app.post('/api/auth/login', (req, res) => {
     const row = db.prepare('SELECT * FROM accounts WHERE username = ? AND password = ?').get(username, btoa(password));
     if (row) {
       const { password: _, ...safeUser } = row;
-      return res.json({ success: true, user: safeUser });
+      const token = jwt.sign({ id: safeUser.id, username: safeUser.username, role: safeUser.role }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+      return res.json({ success: true, user: safeUser, token });
     }
   } catch (dbErr) {
     console.error('[DB] 登录查询失败：', dbErr.message);
@@ -3463,7 +3578,9 @@ app.post('/api/auth/login', (req, res) => {
     writeDataFile('accounts.json', [defaultAccount]);
     
     if (username === 'admin' && password === 'admin123') {
-      return res.json({ success: true, user: { id: 1, username: 'admin', role: 'admin' } });
+      const safeUser = { id: 1, username: 'admin', role: 'admin' };
+      const token = jwt.sign(safeUser, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+      return res.json({ success: true, user: safeUser, token });
     }
     return res.status(401).json({ success: false, error: 'Invalid credentials' });
   }
@@ -3471,7 +3588,8 @@ app.post('/api/auth/login', (req, res) => {
   const account = accounts.find(a => a.username === username && a.password === btoa(password));
   if (account) {
     const { password: _, ...safeUser } = account;
-    res.json({ success: true, user: safeUser });
+    const token = jwt.sign({ id: safeUser.id, username: safeUser.username, role: safeUser.role }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+    res.json({ success: true, user: safeUser, token });
   } else {
     res.status(401).json({ success: false, error: 'Invalid credentials' });
   }

@@ -27,3 +27,14 @@ create-*.mjs
 
 # Node modules
 node_modules/
+
+# 环境变量（含密钥，禁止提交）
+.env
+
+# 用户数据（含隐私信息，禁止提交）
+data/contacts.json
+data/settings.json
+nul
+
+# Vite 构建产物（可重新 build）
+dist/

@@ -57,8 +57,13 @@ while (dbInitAttempts < MAX_INIT_ATTEMPTS && !db) {
   dbInitAttempts++;
   if (dbInitAttempts < MAX_INIT_ATTEMPTS) {
     console.log(`[DB] 重试初始化 (${dbInitAttempts}/${MAX_INIT_ATTEMPTS})...`);
+    // Cross-platform sleep for retry
     const { execSync } = require('child_process');
-    execSync('timeout /t 1 /nobreak > nul', { stdio: 'ignore', windowsHide: true });
+    if (process.platform === 'win32') {
+      execSync('timeout /t 1 /nobreak > nul', { stdio: 'ignore', windowsHide: true });
+    } else {
+      execSync('sleep 1', { stdio: 'ignore' });
+    }
   }
 }
 
