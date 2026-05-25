@@ -30,9 +30,11 @@ export default function ImageUploader({
       const formData = new FormData();
       formData.append('image', file);
 
+      const token = localStorage.getItem('jinyu_material_token');
       const response = await fetch(uploadEndpoint, {
         method: 'POST',
         body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!response.ok) {

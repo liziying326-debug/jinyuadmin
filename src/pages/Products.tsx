@@ -69,9 +69,11 @@ export default function Products() {
       const formData = new FormData();
       formData.append('image', file);
 
+      const token = localStorage.getItem('jinyu_material_token');
       const response = await fetch('/api/about/upload', {
         method: 'POST',
         body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!response.ok) {

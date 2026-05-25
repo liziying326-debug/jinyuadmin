@@ -174,7 +174,8 @@ function ImageUpload({ label, value, onChange }: { label: string; value: string;
     try {
       const form = new FormData();
       form.append('image', file);
-      const res = await fetch('/api/about/upload', { method: 'POST', body: form });
+      const token = localStorage.getItem('jinyu_material_token');
+      const res = await fetch('/api/about/upload', { method: 'POST', body: form, headers: token ? { Authorization: `Bearer ${token}` } : {} });
       const data = await res.json();
       if (data.success) onChange(data.url);
     } catch (err) { console.error('Upload failed:', err); }

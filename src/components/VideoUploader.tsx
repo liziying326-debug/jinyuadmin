@@ -38,7 +38,8 @@ export default function VideoUploader({
     formData.append('video', file);
 
     try {
-      const res = await fetch('/api/upload/video', { method: 'POST', body: formData });
+      const token = localStorage.getItem('jinyu_material_token');
+      const res = await fetch('/api/upload/video', { method: 'POST', body: formData, headers: token ? { Authorization: `Bearer ${token}` } : {} });
       const json = await res.json();
       if (json.success && json.url) {
         onChange(json.url);
